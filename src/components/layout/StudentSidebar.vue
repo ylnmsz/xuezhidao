@@ -9,7 +9,7 @@
         Xue Zhi Dao
       </span>
       <h2 class="font-headline font-bold text-[#006479] text-xl">欢迎回来</h2>
-      <p class="text-sm text-slate-500">学之道学霸</p>
+      <p class="text-sm text-slate-500">{{ displayName }}</p>
     </div>
     <nav class="flex flex-col gap-2">
       <RouterLink
@@ -26,13 +26,13 @@
         <span class="material-symbols-outlined" :data-icon="item.icon">{{ item.icon }}</span>
         <span>{{ item.label }}</span>
       </RouterLink>
-      <button
+      <RouterLink
+        to="/studentrankings"
         class="flex items-center gap-4 px-6 py-4 text-slate-600 hover:bg-slate-200/50 rounded-full transition-all duration-300 hover:translate-x-2 font-semibold"
-        type="button"
       >
         <span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
         <span>排名</span>
-      </button>
+      </RouterLink>
     </nav>
     <div class="mt-auto p-4 bg-primary-container/20 rounded-lg relative overflow-hidden group">
       <div class="relative z-10">
@@ -40,11 +40,12 @@
         <p class="text-sm font-bold text-on-primary-container mb-3">
           完成 3 个数学谜题即可获得白银宝箱！
         </p>
-        <button
-          class="w-full py-2 bg-primary text-white rounded-full text-sm font-bold bouncy-hover"
+        <RouterLink
+          to="/immersivepractice"
+          class="w-full py-2 bg-primary text-white rounded-full text-sm font-bold bouncy-hover text-center"
         >
           开始学习
-        </button>
+        </RouterLink>
       </div>
       <!-- Decorative Cloud -->
       <span
@@ -58,9 +59,12 @@
 </template>
 
 <script setup>
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { getMe, getStoredUser, saveUser } from '@/services/userService.js'
 
 const route = useRoute()
+const user = ref(getStoredUser())
 const navItems = [
   { label: '首页', to: '/studentdashboard', icon: 'home' },
   { label: '作业', to: '/immersivepractice', icon: 'auto_stories' },
@@ -68,4 +72,16 @@ const navItems = [
 ]
 
 const isActive = (path) => route.path === path
+
+const displayName = computed(() => user.value?.name || '未登录用户')
+
+onMounted(async () => {
+  try {
+    const data = await getMe()
+    user.value = data
+    saveUser(data)
+  } catch {
+    // Keep local cached user when API fails.
+  }
+})
 </script>

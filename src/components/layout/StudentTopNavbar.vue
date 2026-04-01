@@ -33,22 +33,77 @@
           >notifications</span
         >
       </button>
-      <div
-        class="flex items-center gap-3 bg-surface-container-low p-1 pr-4 rounded-full border border-outline-variant/10"
+      <RouterLink
+        :to="profileRoute"
+        class="flex items-center gap-3 bg-surface-container-low p-1 pr-4 rounded-full border border-outline-variant/10 hover:bg-surface-container transition-colors"
+        aria-label="打开个人信息"
       >
         <img
           alt="Student Avatar"
           class="w-10 h-10 rounded-full bg-primary-container"
           data-alt="Cute 3D character avatar of a young student with a friendly smile"
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBe6IM-fOrRbFo4dafI3z5jki3uWSd-EknFRgh_eWmpguGliZJ36IzWOElNNw7GcrSLCCSNTV8h6M8b5H3OwV7R0np9PI0ajRRl51yqszFhwc4PqqqV2wghEgFC57s9DAAe5Bku-YrT0U6b_bVt975AxDMd6JvoYTM9UFy79hEouQs9IC3vuycZ6NnSTzYPwxraJ_tgE4eWInvhXVfWt7cDcuAumAJgALVarP-ovqv42UflDIDM_JeGFzlLFwQscBL09d0Cv6MEszrQ"
+          :src="displayAvatar"
         />
         <div class="flex flex-col">
-          <span class="text-sm font-bold leading-none">Xiao Ming</span>
-          <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Scholar</span>
+          <span class="text-sm font-bold leading-none">{{ displayName }}</span>
+          <span class="text-[10px] text-on-surface-variant uppercase tracking-wider">
+            {{ displayRole }}
+          </span>
         </div>
-      </div>
+      </RouterLink>
     </div>
   </header>
 </template>
 
-<script setup></script>
+<script setup>
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { API_BASE } from '@/services/api.js'
+import { getMe, getStoredUser, saveUser } from '@/services/userService.js'
+
+defineProps({
+  profileRoute: {
+    type: String,
+    default: '/studentprofile',
+  },
+})
+
+const user = ref(getStoredUser())
+
+const displayName = computed(() => user.value?.name || '未登录用户')
+const displayRole = computed(() => (user.value?.role === 'teacher' ? '教师' : '学生'))
+const fallbackAvatar =
+  'https://lh3.googleusercontent.com/aida-public/AB6AXuBe6IM-fOrRbFo4dafI3z5jki3uWSd-EknFRgh_eWmpguGliZJ36IzWOElNNw7GcrSLCCSNTV8h6M8b5H3OwV7R0np9PI0ajRRl51yqszFhwc4PqqqV2wghEgFC57s9DAAe5Bku-YrT0U6b_bVt975AxDMd6JvoYTM9UFy79hEouQs9IC3vuycZ6NnSTzYPwxraJ_tgE4eWInvhXVfWt7cDcuAumAJgALVarP-ovqv42UflDIDM_JeGFzlLFwQscBL09d0Cv6MEszrQ'
+
+const resolveAvatarUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  if (url.startsWith('/uploads')) {
+    const base = API_BASE.replace(/\/api\/?$/, '')
+    return `${base}${url}`
+  }
+  return url
+}
+
+const displayAvatar = computed(() => resolveAvatarUrl(user.value?.avatar_url) || fallbackAvatar)
+
+const handleUserUpdated = (event) => {
+  if (event?.detail) {
+    user.value = event.detail
+  }
+}
+
+onMounted(async () => {
+  window.addEventListener('user:updated', handleUserUpdated)
+  try {
+    const data = await getMe()
+    user.value = data
+    saveUser(data)
+  } catch {
+    // Keep local cached user when API fails.
+  }
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('user:updated', handleUserUpdated)
+})
+</script>

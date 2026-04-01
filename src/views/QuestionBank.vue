@@ -2,7 +2,7 @@
   <div class="flex min-h-screen flex-col md:flex-row">
     <!-- SideNavBar Shared Component Implementation -->
     <StudentSidebar />
-    <StudentTopNavbar />
+    <StudentTopNavbar profile-route="/teacherprofile" />
     <!-- Main Content Canvas -->
     <main class="flex-1 flex flex-col min-h-screen lg:ml-72 pt-24 md:pt-28">
       <!-- Question Bank Management Interface -->

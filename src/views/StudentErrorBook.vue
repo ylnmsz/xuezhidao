@@ -98,6 +98,7 @@
             <span class="text-xs text-on-surface-variant font-medium">收藏于 2023-10-24</span>
             <button
               class="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold flex items-center gap-2 hover:scale-105 hover:shadow-lg active:scale-95 transition-all"
+              @click="$router.push('/challengeprep')"
             >
               重新挑战 ⚔️
             </button>
@@ -138,6 +139,7 @@
             <span class="text-xs text-on-surface-variant font-medium">收藏于 2023-10-22</span>
             <button
               class="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold flex items-center gap-2 hover:scale-105 hover:shadow-lg active:scale-95 transition-all"
+              @click="$router.push('/challengeprep')"
             >
               重新挑战 ⚔️
             </button>
@@ -175,6 +177,7 @@
             <span class="text-xs text-on-surface-variant font-medium">收藏于 2023-10-21</span>
             <button
               class="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold flex items-center gap-2 hover:scale-105 hover:shadow-lg active:scale-95 transition-all"
+              @click="$router.push('/challengeprep')"
             >
               重新挑战 ⚔️
             </button>
@@ -224,6 +227,7 @@
             <span class="text-xs text-on-surface-variant font-medium">收藏于 2023-10-18</span>
             <button
               class="px-6 py-3 bg-primary text-on-primary rounded-xl font-bold flex items-center gap-2 hover:scale-105 hover:shadow-lg active:scale-95 transition-all"
+              @click="$router.push('/challengeprep')"
             >
               重新挑战 ⚔️
             </button>

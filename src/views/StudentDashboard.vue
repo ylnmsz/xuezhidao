@@ -38,7 +38,10 @@
               <h3 class="text-2xl font-headline font-bold text-on-surface">我的任务</h3>
               <p class="text-on-surface-variant">不要让学习之火熄灭哦！</p>
             </div>
-            <button class="text-primary font-bold flex items-center gap-1 hover:underline">
+            <button
+              class="text-primary font-bold flex items-center gap-1 hover:underline"
+              @click="$router.push('/studenthomeworklist')"
+            >
               查看全部
               <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
             </button>
@@ -74,6 +77,7 @@
               </div>
               <button
                 class="w-full py-3 bg-tertiary text-white rounded-xl font-black bouncy-hover flex items-center justify-center gap-2"
+                @click="$router.push('/challengeprep')"
               >
                 去挑战 ⚔️
               </button>
@@ -110,6 +114,7 @@
               </div>
               <button
                 class="w-full py-3 bg-surface-container-highest text-on-surface-variant rounded-xl font-black hover:bg-secondary-container hover:text-on-secondary-container transition-colors flex items-center justify-center gap-2"
+                @click="$router.push('/challengeprep')"
               >
                 继续学习
               </button>
@@ -222,7 +227,8 @@
         </section>
         <!-- Ranking Preview -->
         <section
-          class="bg-surface-container-lowest rounded-lg p-6 shadow-sm border border-outline-variant/10"
+          class="bg-surface-container-lowest rounded-lg p-6 shadow-sm border border-outline-variant/10 cursor-pointer"
+          @click="$router.push('/studentrankings')"
         >
           <h4 class="font-bold mb-4 flex items-center gap-2">
             <span
@@ -244,7 +250,7 @@
                 data-alt="Avatar of the user"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1b12XzWOGDLsFDE3VnFbCv4LxAvoxE7VKPdDhEI4I429NGDHk48yqdxhxQKLXha3Zt_F5RzTszuVT5gFkTd3AdtuKC4X-qQwydjI6NoHtG3cxhQK4RD1LObYmnOhIu91K8LfFfxK4hNmKiYcqvqXLWZQ1rIpXG3dvFCHi4liyUd0t_h1D4KIo4EpjjXL2VaMcWfWMLUph-7cu6d8whXyzMInXzV_SbNOjI54d7rzLnad_5HfL2bSWmLjcT2x2Zy4fqqIjhtqXsnAS"
               />
-              <span class="font-bold text-sm flex-1">Xiao Ming (�?</span>
+              <span class="font-bold text-sm flex-1">{{ displayName }}</span>
               <span class="text-xs font-black text-primary">8.4k</span>
             </div>
             <div class="flex items-center gap-4 p-2 rounded-xl">
@@ -283,8 +289,13 @@
 </template>
 
 <script setup>
+import { computed, ref } from 'vue'
 import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
 import StudentSidebar from '@/components/layout/StudentSidebar.vue'
+import { getStoredUser } from '@/services/userService.js'
+
+const user = ref(getStoredUser())
+const displayName = computed(() => user.value?.name || '未登录用户')
 </script>
 
 <style scoped></style>

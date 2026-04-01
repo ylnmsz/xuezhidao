@@ -1,6 +1,6 @@
 <template>
   <div class="flex min-h-screen">
-    <StudentTopNavbar />
+    <StudentTopNavbar profile-route="/teacherprofile" />
     <StudentSidebar />
 
     <!-- Main Workspace -->

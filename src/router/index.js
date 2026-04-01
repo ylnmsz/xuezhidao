@@ -14,9 +14,11 @@ import StudentAnalytics from '../views/StudentAnalytics.vue'
 import StudentDashboard from '../views/StudentDashboard.vue'
 import StudentErrorBook from '../views/StudentErrorBook.vue'
 import StudentHomeworkList from '../views/StudentHomeworkList.vue'
+import StudentProfile from '../views/StudentProfile.vue'
 import StudentRankings from '../views/StudentRankings.vue'
 import TeacherRankings from '../views/TeacherRankings.vue'
 import TeacherDashboard from '../views/TeacherDashboard.vue'
+import TeacherProfile from '../views/TeacherProfile.vue'
 import AiAiAssistant from '../views/AiAiAssistant.vue'
 
 const router = createRouter({
@@ -46,8 +48,10 @@ const router = createRouter({
     { path: '/studentdashboard', name: 'StudentDashboard', component: StudentDashboard },
     { path: '/studenterrorbook', name: 'StudentErrorBook', component: StudentErrorBook },
     { path: '/studenthomeworklist', name: 'StudentHomeworkList', component: StudentHomeworkList },
+    { path: '/studentprofile', name: 'StudentProfile', component: StudentProfile },
     { path: '/studentrankings', name: 'StudentRankings', component: StudentRankings },
     { path: '/teacherdashboard', name: 'TeacherDashboard', component: TeacherDashboard },
+    { path: '/teacherprofile', name: 'TeacherProfile', component: TeacherProfile },
     { path: '/teacherrankings', name: 'TeacherRankings', component: TeacherRankings },
     { path: '/aiaiassistant', name: 'AiAiAssistant', component: AiAiAssistant },
   ],

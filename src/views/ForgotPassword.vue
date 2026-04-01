@@ -163,13 +163,13 @@
             </button>
           </div>
           <div class="text-center pt-2">
-            <a
+            <RouterLink
+              to="/loginregistrationupdatedowl"
               class="inline-flex items-center gap-1 text-sm font-label font-bold text-primary hover:underline decoration-2 underline-offset-4"
-              href="#"
             >
               <span class="material-symbols-outlined text-lg">arrow_back</span>
               返回登录界面
-            </a>
+            </RouterLink>
           </div>
         </form>
       </div>

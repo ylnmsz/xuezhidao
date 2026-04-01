@@ -1,6 +1,6 @@
 <template>
   <div class="flex min-h-screen">
-    <StudentTopNavbar />
+    <StudentTopNavbar profile-route="/teacherprofile" />
     <StudentSidebar />
     <!-- Main Content -->
     <main class="flex-1 lg:ml-72 p-6 md:p-10 pl-6 lg:pl-10 space-y-10 pt-24 md:pt-28">
@@ -193,6 +193,7 @@
             <!-- Action 1 -->
             <button
               class="group flex items-center justify-between p-6 bg-primary-container text-on-primary-container rounded-lg shadow-[0_10px_0_#004a5a] active:shadow-none active:translate-y-[10px] transition-all duration-150 press-effect"
+              @click="$router.push('/assignhomework')"
             >
               <div class="flex items-center gap-4">
                 <div class="bg-white/20 p-4 rounded-2xl shadow-inner">
@@ -210,6 +211,7 @@
             <!-- Action 2 -->
             <button
               class="group flex items-center justify-between p-6 bg-secondary-container text-on-secondary-container rounded-lg shadow-[0_10px_0_#2b5d00] active:shadow-none active:translate-y-[10px] transition-all duration-150 press-effect"
+              @click="$router.push('/questionbank')"
             >
               <div class="flex items-center gap-4">
                 <div class="bg-white/20 p-4 rounded-2xl shadow-inner">
@@ -227,6 +229,7 @@
             <!-- Action 3 -->
             <button
               class="group flex items-center justify-between p-6 bg-tertiary-container text-on-tertiary-container rounded-lg shadow-[0_10px_0_#4b2b00] active:shadow-none active:translate-y-[10px] transition-all duration-150 press-effect"
+              @click="$router.push('/homeworkmanagement')"
             >
               <div class="flex items-center gap-4">
                 <div class="bg-white/20 p-4 rounded-2xl shadow-inner">
@@ -253,6 +256,7 @@
               </p>
               <button
                 class="mt-4 px-6 py-2 bg-primary text-white rounded-full text-xs font-bold hover:bg-primary-dim transition-colors"
+                @click="$router.push('/aiaiassistant')"
               >
                 启动助手
               </button>
@@ -273,6 +277,7 @@
           <!-- Submission Card 1 -->
           <div
             class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-lg shadow-sm border border-outline-variant/5 hover:shadow-md transition-shadow cursor-pointer"
+            @click="$router.push('/homeworkmanagement')"
           >
             <img
               alt="Student"

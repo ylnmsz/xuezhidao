@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-screen">
     <StudentSidebar />
-    <StudentTopNavbar />
+    <StudentTopNavbar profile-route="/teacherprofile" />
 
     <!-- Main Content -->
     <main class="flex-1 lg:ml-72 p-4 md:p-10 space-y-10 pt-24">
@@ -113,6 +113,7 @@
             </div>
             <button
               class="mt-8 w-full py-4 border-2 border-primary text-primary font-bold rounded-full hover:bg-primary hover:text-white transition-all"
+              @click="$router.push('/teacherrankings')"
             >
               查看全班排名
             </button>
@@ -196,12 +197,14 @@
               <div class="col-span-3 flex justify-end gap-3">
                 <button
                   class="px-4 py-2 rounded-full bg-white border border-outline-variant text-xs font-bold hover:bg-slate-50 transition-all flex items-center gap-1"
+                  @click="$router.push('/messages')"
                 >
                   <span class="material-symbols-outlined text-sm">chat_bubble</span>
                   发私信 💬
                 </button>
                 <button
                   class="px-4 py-2 rounded-full bg-primary-container text-on-primary-container text-xs font-bold hover:scale-105 transition-all flex items-center gap-1"
+                  @click="$router.push('/studentanalytics')"
                 >
                   <span class="material-symbols-outlined text-sm">analytics</span>
                   查看详情 📊
@@ -250,12 +253,14 @@
               <div class="col-span-3 flex justify-end gap-3">
                 <button
                   class="px-4 py-2 rounded-full bg-white border border-outline-variant text-xs font-bold hover:bg-slate-50 transition-all flex items-center gap-1"
+                  @click="$router.push('/messages')"
                 >
                   <span class="material-symbols-outlined text-sm">chat_bubble</span>
                   发私信 💬
                 </button>
                 <button
                   class="px-4 py-2 rounded-full bg-primary-container text-on-primary-container text-xs font-bold hover:scale-105 transition-all flex items-center gap-1"
+                  @click="$router.push('/studentanalytics')"
                 >
                   <span class="material-symbols-outlined text-sm">analytics</span>
                   查看详情 📊
@@ -304,12 +309,14 @@
               <div class="col-span-3 flex justify-end gap-3">
                 <button
                   class="px-4 py-2 rounded-full bg-white border border-outline-variant text-xs font-bold hover:bg-slate-50 transition-all flex items-center gap-1"
+                  @click="$router.push('/messages')"
                 >
                   <span class="material-symbols-outlined text-sm">chat_bubble</span>
                   发私信 💬
                 </button>
                 <button
                   class="px-4 py-2 rounded-full bg-primary-container text-on-primary-container text-xs font-bold hover:scale-105 transition-all flex items-center gap-1"
+                  @click="$router.push('/studentanalytics')"
                 >
                   <span class="material-symbols-outlined text-sm">analytics</span>
                   查看详情 📊

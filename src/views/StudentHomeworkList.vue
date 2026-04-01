@@ -88,6 +88,7 @@
                 </div>
                 <button
                   class="px-10 py-4 bg-primary-container text-on-primary-container font-headline font-bold rounded-full bouncy-hover active-squish shadow-xl shadow-primary/20 flex items-center gap-2"
+                  @click="$router.push('/challengeprep')"
                 >
                   继续学习
                   <span class="material-symbols-outlined">arrow_forward</span>
@@ -124,6 +125,7 @@
               </div>
               <button
                 class="w-full py-4 bg-white text-secondary font-headline font-bold rounded-xl bouncy-hover active-squish shadow-lg shadow-secondary/5 border border-secondary/10"
+                @click="$router.push('/challengeprep')"
               >
                 去完成
               </button>
@@ -148,7 +150,10 @@
             <p class="text-on-surface-variant text-sm mb-6">掌握本单元核心词汇及短语用法...</p>
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-on-surface-variant/60">完成度 0%</span>
-              <button class="text-primary font-bold text-sm flex items-center gap-1 bouncy-hover">
+              <button
+                class="text-primary font-bold text-sm flex items-center gap-1 bouncy-hover"
+                @click="$router.push('/challengeprep')"
+              >
                 开始挑战 <span class="material-symbols-outlined text-sm">bolt</span>
               </button>
             </div>
@@ -178,6 +183,7 @@
               <span class="text-xs font-bold text-secondary">得分：98/100</span>
               <button
                 class="text-on-surface-variant font-bold text-sm flex items-center gap-1 bouncy-hover"
+                @click="$router.push('/studentanalytics')"
               >
                 查看详情 <span class="material-symbols-outlined text-sm">visibility</span>
               </button>

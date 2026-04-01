@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-screen">
     <StudentSidebar />
-    <StudentTopNavbar />
+    <StudentTopNavbar profile-route="/teacherprofile" />
 
     <main class="flex-grow p-6 md:p-10 space-y-10 overflow-y-auto pt-24 md:pt-28 lg:ml-72">
       <header
@@ -10,6 +10,7 @@
         <div class="flex items-center gap-4">
           <button
             class="material-symbols-outlined p-2 hover:bg-surface-container rounded-full transition-colors"
+            @click="$router.push('/classmanagement')"
           >
             arrow_back
           </button>
@@ -268,9 +269,12 @@
         <section class="bg-white rounded-xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.03)]">
           <div class="flex justify-between items-center mb-6">
             <h3 class="font-headline font-bold text-lg">最近作业</h3>
-            <span class="text-primary text-sm font-bold cursor-pointer hover:underline"
-              >查看全部</span
+            <button
+              class="text-primary text-sm font-bold cursor-pointer hover:underline"
+              @click="$router.push('/studenthomeworklist')"
             >
+              查看全部
+            </button>
           </div>
           <div class="divide-y divide-surface-container-low">
             <div

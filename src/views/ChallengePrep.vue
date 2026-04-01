@@ -4,11 +4,12 @@
     <StudentSidebar />
 
     <header
-      class="bg-white/80 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.06)] sticky top-0 z-50 flex justify-between items-center px-8 py-4 w-full lg:ml-72"
+      class="bg-white/80 backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.06)] sticky top-20 z-30 flex justify-between items-center px-8 py-4 w-full lg:ml-72"
     >
       <div class="flex items-center gap-4">
         <button
           class="w-12 h-12 flex items-center justify-center rounded-full bg-slate-100/50 hover:scale-105 hover:bg-slate-100/50 transition-all duration-300 scale-95 active:duration-75"
+          @click="$router.back()"
         >
           <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
         </button>
@@ -23,7 +24,10 @@
           <span class="text-[10px] text-on-surface-variant">截止：2023-11-24 18:00</span>
         </div>
         <div
-          class="w-10 h-10 rounded-full overflow-hidden bg-primary-container ring-4 ring-white shadow-sm"
+          class="w-10 h-10 rounded-full overflow-hidden bg-primary-container ring-4 ring-white shadow-sm cursor-pointer"
+          role="button"
+          aria-label="打开个人信息"
+          @click="$router.push('/studentprofile')"
         >
           <img
             alt="Student avatar"
@@ -34,7 +38,9 @@
       </div>
     </header>
 
-    <main class="flex-grow flex flex-col items-center justify-center p-6 md:p-12 relative lg:ml-72">
+    <main
+      class="flex-grow flex flex-col items-center justify-center p-6 md:p-12 pt-24 md:pt-28 relative lg:ml-72"
+    >
       <div
         class="absolute top-20 left-10 w-32 h-32 bg-primary-fixed/20 rounded-full blur-3xl -z-10"
       ></div>

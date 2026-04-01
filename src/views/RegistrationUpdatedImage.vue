@@ -14,7 +14,7 @@
           <div class="mb-8 inline-block">
             <img
               alt="Friendly space-traveling cat robot illustration"
-              class="w-64 h-64 object-contain animate-bounce transition-all duration-[3000ms]"
+              class="w-64 h-64 object-contain"
               data-alt="A cute, 2D flat vector illustration of a friendly space-traveling cat wearing glasses, holding a glowing lightbulb and a book, surrounded by colorful math symbols. Soft candy colors."
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLUkArjB1DYg7ebVwqouqX2aceYEJQYaCiJm1gOmuDWdQzBasxAhkWBiTHvPkNRwFqEikxWtzPgMp7mQHT5bZUzKEOsWrDwRarnMLb9kHAQSczRyjnjEF8tP2qfLt8ZN0pP5c-2GA4Kbl62QSoozttRna8GOwFXmWkfJKtyyxnMJFlJoaPFFT2VuW7_Kr-AxXIcdP_qMBkjgm6IwPYKdWI6nreB7mIW2xGeacPEv0CRErgrqzB9C4TrHhWCbVOKymz335YAcM8iffp"
             />
@@ -39,13 +39,27 @@
 
           <div class="flex p-1.5 bg-surface-container-low rounded-lg mb-8">
             <button
-              class="flex-1 py-3 px-4 rounded-lg bg-white shadow-sm text-primary font-bold text-sm transition-all flex items-center justify-center gap-2"
+              class="flex-1 py-3 px-4 rounded-lg text-sm transition-all flex items-center justify-center gap-2"
+              :class="
+                role === 'student'
+                  ? 'bg-white shadow-sm text-primary font-bold'
+                  : 'text-on-surface-variant font-semibold hover:bg-white/50'
+              "
+              type="button"
+              @click="role = 'student'"
             >
               <span class="material-symbols-outlined text-xl" data-icon="school">school</span>
               我是学生
             </button>
             <button
-              class="flex-1 py-3 px-4 rounded-lg text-on-surface-variant font-semibold text-sm hover:bg-white/50 transition-all flex items-center justify-center gap-2"
+              class="flex-1 py-3 px-4 rounded-lg text-sm transition-all flex items-center justify-center gap-2"
+              :class="
+                role === 'teacher'
+                  ? 'bg-white shadow-sm text-primary font-bold'
+                  : 'text-on-surface-variant font-semibold hover:bg-white/50'
+              "
+              type="button"
+              @click="role = 'teacher'"
             >
               <span class="material-symbols-outlined text-xl" data-icon="history_edu"
                 >history_edu</span
@@ -54,7 +68,7 @@
             </button>
           </div>
 
-          <form class="space-y-5">
+          <form class="space-y-5" @submit.prevent="handleRegister">
             <div class="space-y-1.5">
               <label class="text-xs font-bold text-on-surface-variant ml-2 tracking-wide"
                 >真实姓名</label
@@ -69,6 +83,7 @@
                   class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary-container text-on-surface placeholder:text-outline-variant font-medium"
                   placeholder="输入您的姓名"
                   type="text"
+                  v-model.trim="name"
                 />
               </div>
             </div>
@@ -86,6 +101,7 @@
                   class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary-container text-on-surface placeholder:text-outline-variant font-medium"
                   placeholder="example@xuezhidao.com"
                   type="email"
+                  v-model.trim="email"
                 />
               </div>
             </div>
@@ -104,6 +120,7 @@
                     class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary-container text-on-surface placeholder:text-outline-variant font-medium"
                     placeholder="138 **** 8888"
                     type="tel"
+                    v-model.trim="phone"
                   />
                 </div>
                 <button
@@ -129,6 +146,7 @@
                     class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary-container text-on-surface placeholder:text-outline-variant font-medium"
                     placeholder="••••••••"
                     type="password"
+                    v-model="password"
                   />
                 </div>
               </div>
@@ -146,10 +164,14 @@
                     class="w-full pl-12 pr-4 py-4 bg-surface-container-low border-none rounded-lg focus:ring-2 focus:ring-primary-container text-on-surface placeholder:text-outline-variant font-medium"
                     placeholder="••••••••"
                     type="password"
+                    v-model="confirmPassword"
                   />
                 </div>
               </div>
             </div>
+            <p v-if="errorMessage" class="text-sm text-error font-semibold">
+              {{ errorMessage }}
+            </p>
             <div class="flex items-center gap-2 px-2 py-2">
               <input
                 id="terms"
@@ -164,6 +186,7 @@
             <button
               class="w-full py-4 bg-primary-container text-on-primary-container text-lg font-extrabold rounded-lg custom-shadow flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
               type="submit"
+              :disabled="isSubmitting"
             >
               立即注册 🚀
             </button>
@@ -171,7 +194,12 @@
           <footer class="mt-8 text-center">
             <p class="text-on-surface-variant font-medium">
               已有账号？
-              <a class="text-primary font-bold hover:underline ml-1" href="#">立即登录</a>
+              <RouterLink
+                to="/loginregistrationupdatedowl"
+                class="text-primary font-bold hover:underline ml-1"
+              >
+                立即登录
+              </RouterLink>
             </p>
           </footer>
         </div>
@@ -186,6 +214,56 @@
     ></div>
   </div>
 </template>
+
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { register } from '@/services/authService.js'
+
+const router = useRouter()
+const role = ref('student')
+const name = ref('')
+const email = ref('')
+const phone = ref('')
+const password = ref('')
+const confirmPassword = ref('')
+const errorMessage = ref('')
+const isSubmitting = ref(false)
+
+const handleRegister = async () => {
+  errorMessage.value = ''
+  if (!name.value || !email.value || !password.value) {
+    errorMessage.value = '请完整填写姓名、邮箱和密码。'
+    return
+  }
+  if (password.value.length < 8) {
+    errorMessage.value = '密码至少 8 位。'
+    return
+  }
+  if (password.value !== confirmPassword.value) {
+    errorMessage.value = '两次密码不一致。'
+    return
+  }
+
+  isSubmitting.value = true
+  try {
+    const data = await register({
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      role: role.value,
+    })
+    localStorage.setItem('auth_token', data.token)
+    localStorage.setItem('auth_user', JSON.stringify(data.user))
+    const target = data.user?.role === 'teacher' ? '/teacherdashboard' : '/studentdashboard'
+    router.push(target)
+  } catch (error) {
+    errorMessage.value = error.message || '注册失败，请稍后重试。'
+  } finally {
+    isSubmitting.value = false
+  }
+}
+</script>
 
 <style scoped>
 .material-symbols-outlined {

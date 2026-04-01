@@ -1,13 +1,16 @@
 <template>
   <div class="flex h-screen flex-col md:flex-row bg-[#FAFAFA]">
     <StudentSidebar />
-    <StudentTopNavbar />
+    <StudentTopNavbar profile-route="/teacherprofile" />
     <!-- Main Content Area -->
     <main class="flex-1 lg:ml-72 p-6 md:p-12 max-w-7xl mx-auto w-full pt-24 md:pt-28">
       <!-- Header -->
       <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-2">
-          <button class="flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all">
+          <button
+            class="flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all"
+            @click="$router.push('/homeworkmanagement')"
+          >
             <span class="material-symbols-outlined">arrow_back</span>
             ← 返回作业列表
           </button>

@@ -2,11 +2,11 @@
   <div class="bg-surface font-body text-on-surface">
     <div class="flex min-h-screen">
       <StudentSidebar />
-      <StudentTopNavbar />
+      <StudentTopNavbar profile-route="/teacherprofile" />
 
-      <main class="flex-1 min-h-screen overflow-x-hidden lg:ml-72">
+      <main class="flex-1 min-h-screen overflow-x-hidden lg:ml-72 pt-24 md:pt-28">
         <header
-          class="bg-white/80 backdrop-blur-xl sticky top-0 z-40 shadow-[0_20px_50px_rgba(0,0,0,0.06)] flex justify-between items-center px-8 py-4 w-full"
+          class="bg-white/80 backdrop-blur-xl sticky top-20 z-30 shadow-[0_20px_50px_rgba(0,0,0,0.06)] flex justify-between items-center px-8 py-4 w-full"
         >
           <div class="flex items-center gap-6 flex-1">
             <span class="text-2xl font-black text-cyan-600 tracking-tight font-headline"

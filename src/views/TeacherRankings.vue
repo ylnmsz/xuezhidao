@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-screen">
     <StudentSidebar />
-    <StudentTopNavbar />
+    <StudentTopNavbar profile-route="/teacherprofile" />
 
     <main class="flex-1 p-8 overflow-y-auto pt-24 md:pt-28 lg:ml-72">
       <header class="flex justify-between items-center mb-10">
