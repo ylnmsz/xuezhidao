@@ -1,14 +1,14 @@
 <template>
-  <div class="flex h-screen flex-col md:flex-row">
+  <div class="flex min-h-screen flex-col md:flex-row">
     <!-- SideNavBar Shared Component Implementation -->
     <StudentSidebar />
     <StudentTopNavbar />
     <!-- Main Content Canvas -->
-    <main class="flex-1 flex flex-col h-screen overflow-hidden lg:ml-72 pt-28">
+    <main class="flex-1 flex flex-col min-h-screen lg:ml-72 pt-24 md:pt-28">
       <!-- Question Bank Management Interface -->
-      <div class="flex-1 flex overflow-hidden p-6 gap-6">
+      <div class="flex-1 flex flex-col lg:flex-row overflow-hidden p-6 gap-6">
         <!-- Left Panel: Folder Tree -->
-        <section class="w-80 flex flex-col gap-4">
+        <section class="w-full lg:w-80 flex flex-col gap-4">
           <div class="bg-surface-container-low rounded-lg p-6 flex-1 overflow-y-auto">
             <div class="flex items-center justify-between mb-6">
               <h3 class="font-headline font-bold text-on-surface">题库分类</h3>

@@ -12,38 +12,27 @@
       <p class="text-sm text-slate-500">学之道学霸</p>
     </div>
     <nav class="flex flex-col gap-2">
-      <!-- Active Home -->
-      <a
-        class="flex items-center gap-4 px-6 py-4 bg-[#00B4D8] text-white rounded-full shadow-lg scale-105 transition-all duration-300 font-semibold"
-        href="#"
-        @click.prevent="$router.push('/studentdashboard')"
+      <RouterLink
+        v-for="item in navItems"
+        :key="item.to"
+        :to="item.to"
+        :class="[
+          'flex items-center gap-4 px-6 py-4 rounded-full transition-all duration-300 font-semibold',
+          isActive(item.to)
+            ? 'bg-[#00B4D8] text-white shadow-lg scale-105'
+            : 'text-slate-600 hover:bg-slate-200/50 hover:translate-x-2',
+        ]"
       >
-        <span class="material-symbols-outlined" data-icon="home">home</span>
-        <span>首页</span>
-      </a>
-      <a
+        <span class="material-symbols-outlined" :data-icon="item.icon">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
+      </RouterLink>
+      <button
         class="flex items-center gap-4 px-6 py-4 text-slate-600 hover:bg-slate-200/50 rounded-full transition-all duration-300 hover:translate-x-2 font-semibold"
-        href="#"
-        @click.prevent="$router.push('/immersivepractice')"
-      >
-        <span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
-        <span>作业</span>
-      </a>
-      <a
-        class="flex items-center gap-4 px-6 py-4 text-slate-600 hover:bg-slate-200/50 rounded-full transition-all duration-300 hover:translate-x-2 font-semibold"
-        href="#"
-        @click.prevent="$router.push('/studenterrorbook')"
-      >
-        <span class="material-symbols-outlined" data-icon="cancel">cancel</span>
-        <span>错题本</span>
-      </a>
-      <a
-        class="flex items-center gap-4 px-6 py-4 text-slate-600 hover:bg-slate-200/50 rounded-full transition-all duration-300 hover:translate-x-2 font-semibold"
-        href="#"
+        type="button"
       >
         <span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
         <span>排名</span>
-      </a>
+      </button>
     </nav>
     <div class="mt-auto p-4 bg-primary-container/20 rounded-lg relative overflow-hidden group">
       <div class="relative z-10">
@@ -68,4 +57,15 @@
   </aside>
 </template>
 
-<script setup></script>
+<script setup>
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const navItems = [
+  { label: '首页', to: '/studentdashboard', icon: 'home' },
+  { label: '作业', to: '/immersivepractice', icon: 'auto_stories' },
+  { label: '错题本', to: '/studenterrorbook', icon: 'cancel' },
+]
+
+const isActive = (path) => route.path === path
+</script>

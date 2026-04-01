@@ -3,7 +3,7 @@
     <StudentSidebar />
     <StudentTopNavbar />
     <!-- Main Content Area -->
-    <main class="flex-1 lg:ml-72 p-6 md:p-12 max-w-7xl mx-auto w-full pt-28">
+    <main class="flex-1 lg:ml-72 p-6 md:p-12 max-w-7xl mx-auto w-full pt-24 md:pt-28">
       <!-- Header -->
       <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div class="space-y-2">

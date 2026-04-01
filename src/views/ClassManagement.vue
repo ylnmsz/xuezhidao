@@ -1,12 +1,11 @@
 <template>
   <div class="flex min-h-screen">
     <StudentSidebar />
+    <StudentTopNavbar />
 
     <!-- Main Content -->
-    <main class="flex-1 lg:ml-72 p-4 md:p-10 space-y-10">
-      <StudentTopNavbar />
-
-      <div class="pt-24 space-y-12">
+    <main class="flex-1 lg:ml-72 p-4 md:p-10 space-y-10 pt-24">
+      <div class="space-y-12">
         <!-- Class Grid (Bento Style) -->
         <section class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Class Card 1 -->

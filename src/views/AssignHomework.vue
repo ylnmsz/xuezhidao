@@ -5,7 +5,7 @@
 
     <!-- Main Workspace -->
     <main
-      class="flex-1 lg:ml-72 pt-28 px-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8"
+      class="flex-1 lg:ml-72 pt-24 md:pt-28 px-6 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8"
     >
       <!-- Left: Question Basket -->
       <section class="md:col-span-5 flex flex-col gap-6">

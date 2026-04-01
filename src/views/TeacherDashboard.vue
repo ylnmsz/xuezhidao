@@ -3,7 +3,7 @@
     <StudentTopNavbar />
     <StudentSidebar />
     <!-- Main Content -->
-    <main class="flex-1 lg:ml-72 p-6 md:p-10 pl-6 lg:pl-10 space-y-10 pt-28">
+    <main class="flex-1 lg:ml-72 p-6 md:p-10 pl-6 lg:pl-10 space-y-10 pt-24 md:pt-28">
       <!-- Statistics Bento Grid -->
       <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <!-- Stat Card 1 -->

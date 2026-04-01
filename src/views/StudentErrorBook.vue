@@ -3,7 +3,7 @@
   <StudentSidebar />
 
   <!-- Main Content Area -->
-  <main class="pt-24 pb-12 px-6 md:ml-64 min-h-screen">
+  <main class="pt-24 pb-12 px-6 md:px-8 lg:ml-72 min-h-screen">
     <div class="max-w-6xl mx-auto">
       <!-- Header & Progress Section -->
       <header class="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -251,7 +251,5 @@
 import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
 import StudentSidebar from '@/components/layout/StudentSidebar.vue'
 </script>
-
-<script setup></script>
 
 <style scoped></style>
