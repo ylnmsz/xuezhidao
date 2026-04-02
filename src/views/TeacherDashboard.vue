@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-screen">
-    <StudentTopNavbar profile-route="/teacherprofile" />
-    <StudentSidebar />
+    <TeacherTopNavbar profile-route="/teacherprofile" />
+    <TeacherSidebar />
     <!-- Main Content -->
     <main class="flex-1 lg:ml-72 p-6 md:p-10 pl-6 lg:pl-10 space-y-10 pt-24 md:pt-28">
       <!-- Statistics Bento Grid -->
@@ -378,8 +378,8 @@
 </template>
 
 <script setup>
-import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
-import StudentSidebar from '@/components/layout/StudentSidebar.vue'
+import TeacherTopNavbar from '@/components/layout/TeacherTopNavbar.vue'
+import TeacherSidebar from '@/components/layout/TeacherSidebar.vue'
 </script>
 
 <style scoped></style>

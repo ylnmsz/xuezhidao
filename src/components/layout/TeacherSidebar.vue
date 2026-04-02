@@ -26,13 +26,6 @@
         <span class="material-symbols-outlined" :data-icon="item.icon">{{ item.icon }}</span>
         <span>{{ item.label }}</span>
       </RouterLink>
-      <RouterLink
-        to="/studentrankings"
-        class="flex items-center gap-4 px-6 py-4 text-slate-600 hover:bg-slate-200/50 rounded-full transition-all duration-300 hover:translate-x-2 font-semibold"
-      >
-        <span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
-        <span>排名</span>
-      </RouterLink>
     </nav>
   </aside>
 </template>
@@ -45,9 +38,11 @@ import { getMe, getStoredUser, saveUser } from '@/services/userService.js'
 const route = useRoute()
 const user = ref(getStoredUser())
 const navItems = [
-  { label: '首页', to: '/studentdashboard', icon: 'home' },
-  { label: '练习', to: '/immersivepractice', icon: 'auto_stories' },
-  { label: '错题本', to: '/studenterrorbook', icon: 'cancel' },
+  { label: '工作台', to: '/teacherdashboard', icon: 'dashboard' },
+  { label: '班级管理', to: '/classmanagement', icon: 'groups' },
+  { label: '题库管理', to: '/questionbank', icon: 'menu_book' },
+  { label: '布置作业', to: '/assignhomework', icon: 'playlist_add' },
+  { label: '学情分析', to: '/analyticsgrading', icon: 'query_stats' },
 ]
 
 const isActive = (path) => route.path === path

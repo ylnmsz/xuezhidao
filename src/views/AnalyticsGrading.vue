@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen flex-col md:flex-row bg-[#FAFAFA]">
-    <StudentSidebar />
-    <StudentTopNavbar profile-route="/teacherprofile" />
+    <TeacherSidebar />
+    <TeacherTopNavbar profile-route="/teacherprofile" />
     <!-- Main Content Area -->
     <main class="flex-1 lg:ml-72 p-6 md:p-12 max-w-7xl mx-auto w-full pt-24 md:pt-28">
       <!-- Header -->
@@ -369,8 +369,8 @@
 </template>
 
 <script setup>
-import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
-import StudentSidebar from '@/components/layout/StudentSidebar.vue'
+import TeacherTopNavbar from '@/components/layout/TeacherTopNavbar.vue'
+import TeacherSidebar from '@/components/layout/TeacherSidebar.vue'
 </script>
 
 <style scoped></style>

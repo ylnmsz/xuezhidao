@@ -2,7 +2,7 @@
   <div class="bg-surface font-body text-on-surface">
     <div class="flex min-h-screen">
       <StudentSidebar />
-      <StudentTopNavbar profile-route="/teacherprofile" />
+      <TeacherTopNavbar profile-route="/teacherprofile" />
 
       <main class="flex-1 min-h-screen overflow-x-hidden lg:ml-72 pt-24 md:pt-28">
         <header
@@ -432,7 +432,7 @@
 </template>
 
 <script setup>
-import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
+import TeacherTopNavbar from '@/components/layout/TeacherTopNavbar.vue'
 import StudentSidebar from '@/components/layout/StudentSidebar.vue'
 </script>
 

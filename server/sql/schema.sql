@@ -68,7 +68,11 @@ CREATE TABLE IF NOT EXISTS questions (
   bank_id UUID REFERENCES question_banks(id),
   content TEXT NOT NULL,
   subject TEXT,
+  grade TEXT,
   difficulty TEXT,
+  question_type TEXT,
+  answer TEXT,
+  explanation TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 

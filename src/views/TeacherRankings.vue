@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-screen">
     <StudentSidebar />
-    <StudentTopNavbar profile-route="/teacherprofile" />
+    <TeacherTopNavbar profile-route="/teacherprofile" />
 
     <main class="flex-1 p-8 overflow-y-auto pt-24 md:pt-28 lg:ml-72">
       <header class="flex justify-between items-center mb-10">
@@ -321,7 +321,7 @@
 </template>
 
 <script setup>
-import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
+import TeacherTopNavbar from '@/components/layout/TeacherTopNavbar.vue'
 import StudentSidebar from '@/components/layout/StudentSidebar.vue'
 </script>
 

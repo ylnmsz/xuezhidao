@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-screen">
-    <StudentTopNavbar profile-route="/teacherprofile" />
-    <StudentSidebar />
+    <TeacherTopNavbar profile-route="/teacherprofile" />
+    <TeacherSidebar />
 
     <!-- Main Workspace -->
     <main
@@ -329,8 +329,8 @@
 </template>
 
 <script setup>
-import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
-import StudentSidebar from '@/components/layout/StudentSidebar.vue'
+import TeacherTopNavbar from '@/components/layout/TeacherTopNavbar.vue'
+import TeacherSidebar from '@/components/layout/TeacherSidebar.vue'
 </script>
 
 <style scoped></style>
