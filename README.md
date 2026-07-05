@@ -1,88 +1,150 @@
-﻿# 🎓 学之道 (Xue Zhi Dao) - 智能教与学互动平台
+# 学之道 (XueZhiDao)
 
-## 📖 项目简介
-“学之道”是一个面向学生与教师的双端教育Web平台。该网站将枯燥的传统刷题体验进行了**游戏化（Gamification）**改造，提供了清新活泼、大圆角、糖果色系的UI风格。
-平台不仅为学生提供沉浸式的刷题环境、错题收录与战力分析功能；也为教师提供了一站式的题库管理、班级管理、作业布置与学情数据分析控制台。
+智能教辅与题库管理平台，面向教师端和学生端提供题库录入、班级管理、作业分发、练习测评、错题本、排行榜、学情分析和 AI 辅助答疑等功能。
 
-## 🛠 技术栈
-- **核心框架**: Vue 3 (Composition API, <script setup>)
-- **构建工具**: Vite (极速冷启动与热更新)
-- **路由管理**: Vue Router 4 (单页面SPA跳转)
-- **状态管理**: Pinia (处理当前登录用户的角色与状态)
-- **UI 样式**: Tailwind CSS (原子化CSS，所有页面响应式设计)
+## 功能概览
 
-## 📂 核心目录结构
+- 教师端：教师工作台、题库管理、DOCX/文本试题解析、班级管理、邀请码入班、作业布置、作业批改、学情分析、排行榜。
+- 学生端：学生工作台、加入班级、作业列表、沉浸式练习、专项练习、错题本、个人学习分析、排行榜、个人资料维护。
+- 题型支持：单选题、多选题、判断题、填空题、简答题、阅读理解、连线题、翻译题、改错题、编程题、完形填空、古诗默写等。
+- 内容渲染：支持 KaTeX 数学公式渲染，支持题干、选项、解析中的图文内容。
+- 鉴权与权限：基于 JWT 的登录态管理，前端路由按教师/学生角色拦截，接口统一携带 Authorization。
 
-\\\	ext
+## 技术栈
+
+### 前端
+
+- Vue 3
+- Vue Router
+- Pinia
+- Vite 8
+- KaTeX
+- Cropper.js
+
+### 后端
+
+- Node.js 20+
+- Express
+- PostgreSQL
+- JWT + bcryptjs
+- Multer
+- adm-zip
+- OpenAI API 兼容接口
+- MinerU 文档解析接口
+
+## 目录结构
+
+```text
 xuezhidao/
-├── public/                 # 静态资源 (Logo、全局Icon等)
-├── src/
-│   ├── components/         # 复用组件库
-│   │   └── layout/         # 页面公共布局组件 (例如顶部导航栏与侧边栏)
-│   │       ├── StudentSidebar.vue    # 左侧全局菜单导航栏
-│   │       └── StudentTopNavbar.vue  # 顶部全局用户信息栏
-│   ├── router/             # 路由配置 (含所有页面映射与默认重定向)
-│   ├── stores/             # 状态管理目录
-│   ├── views/              # 所有核心业务视图页面
-│   │   ├── LoginRegistrationUpdatedOwl.vue  # 登录/注册页 (含角色选择)
-│   │   ├── StudentDashboard.vue             # 👨‍🎓 学生端：学习主页 (数据总览、每日任务)
-│   │   ├── ImmersivePractice.vue            # 👨‍🎓 学生端：沉浸式刷题/考试页
-│   │   ├── StudentErrorBook.vue             # 👨‍🎓 学生端：错题本
-│   │   ├── TeacherDashboard.vue             # 👩‍🏫 教师端：老师工作台 (学情总览)
-│   │   ├── ClassManagement.vue              # 👩‍🏫 教师端：班级与学生管理 (名单、邀请)
-│   │   ├── QuestionBank.vue                 # 👩‍🏫 教师端：题库管理与录入 (支持富文本)
-│   │   ├── AssignHomework.vue               # 👩‍🏫 教师端：布置作业 (拖拽组卷发步)
-│   │   └── AnalyticsGrading.vue             # 👩‍🏫 教师端：学情分析与作业批改页
-│   ├── App.vue             # Vue 根组件
-│   └── main.js             # 项目入口文件 (挂载路由与状态)
-├── vite.config.js          # Vite 构建配置
-└── tailwind.config.js      # (如有) Tailwind 主题与颜色规范配置
-\\\
+├── src/                         # Vue 前端
+│   ├── components/              # 通用组件与题型组件
+│   ├── router/                  # 前端路由与权限守卫
+│   ├── services/                # 前端 API 请求封装
+│   ├── stores/                  # Pinia 状态
+│   ├── utils/                   # 数学公式/内容渲染工具
+│   └── views/                   # 学生端与教师端页面
+├── server/                      # Express 后端
+│   ├── sql/schema.sql           # 数据库表结构与迁移补丁
+│   ├── src/controllers/         # 控制器
+│   ├── src/routes/              # REST API 路由
+│   ├── src/services/            # 业务服务与文档解析
+│   └── src/scripts/             # 数据库脚本
+├── scripts/                     # 文档解析辅助脚本
+├── docx/                        # DOCX 解析样例与中间材料
+└── 项目说明文档.md              # 更完整的项目说明
+```
 
-## 🚀 核心功能模块
+## 本地运行
 
-### 1. 👨‍🎓 学生端功能
-- **个人战力大厅**：可视化展示今日学习时长、当前等级排名以及基于雷达图的各科目“战力值”。
-- **沉浸式作答**：以专注模式进行的做题环境，提供进度追踪、提交反馈、动画提示（正确五角星/错误震动）。
-- **智能错题本**：自动收录错题，支持后续二次挑战、状态标记（未掌握/已熟练）。
+### 1. 安装依赖
 
-### 2. 👩‍🏫 教师端功能
-- **班级学情看板**：实时监控各班级的作业完成率、活跃人数，通过图表直观展示大盘数据。
-- **题库录入与分类**：通过树状目录管理题目，支持多种题型（单选、多选、填空）录入。
-- **可视化布置作业**：左右分栏拖拽式组卷，一键将题集分发给指定班级的学生。
-- **作业批改分析**：对于已结束的作业，高亮展示“高频错题”，并支持对每个学生的主观题快速评阅。
+```bash
+npm install
+cd server
+npm install
+```
 
-## 🎨 UI & 响应式规范
-- **设计风格**：活泼可爱、拥有充足留白，组件形态以大圆角 (Border Radius 16px+) 为主。
-- **色彩指南**：以糖果浅色系为主（天空蓝、薄荷绿、奶油黄），配以柔软且分散的弥散阴影，减少视觉疲劳。
-- **响应式 (Responsive)**：所有核心页面已针对 Mobile（移动端）、Tablet（平板）以及 Desktop（桌面端）进行适配。
-  - 在移动端 (sm/md): 左侧菜单导航 \<aside>\ 自动隐藏，主内容区全屏占满。
-  - 多列统计数据自动堆叠为单列展示以适配移动设备阅读。
+### 2. 配置后端环境变量
 
-## 📦 项目运行指南
+在 `server/.env` 中配置：
 
-1. **环境准备**
-   确保你的电脑已安装 [Node.js](https://nodejs.org/) (建议版本 v16+)。
+```env
+PORT=4000
+DATABASE_URL=postgres://用户名:密码@localhost:5432/数据库名
+JWT_SECRET=请替换为安全随机字符串
+JWT_EXPIRES_IN=7d
+CORS_ORIGIN=http://localhost:5173
 
-2. **安装依赖**
-   \\\ash
-   cd xuezhidao
-   npm install
-   \\\
+OPENAI_API_KEY=
+OPENAI_MODEL=deepseek-chat
+OPENAI_BASE_URL=https://api.openai.com/v1
 
-3. **启动开发服务器**
-   \\\ash
-   npm run dev
-   \\\
-   运行后，会在终端看到 \Local: http://localhost:5173/\ 这类提示，直接在浏览器中打开该地址即可。
+MINERU_API_URL=https://mineru.net/api/v4/file-urls/batch
+MINERU_API_TOKEN=
+MINERU_API_RESULT_URL=https://mineru.net/api/v4/extract-results/batch
+MINERU_MODEL_VERSION=vlm
+```
 
-4. **生产环境构建 (可选)**
-   \\\ash
-   npm run build
-   \\\
+说明：
 
-## 📌 下一步开发计划 (TODOs)
-- [ ] **接口对接**：使用 \Axios\ 替换页面中的静态 mock 数据，与后端进行真实的数据交互。
-- [ ] **路由权限守卫**：在 \outer/index.js\ 中添加 \eforeEach\，防止学生角色通过在地址栏手敲 URL 访问到老师端页面。
-- [ ] **独立教师端 Layout**：复制并修改一个分离的 \TeacherSidebar.vue\，为老师端渲染专属的独立菜单（如：班级管理、批改中心），从而彻底实现两端权限隔离。
-- [ ] **富文本编辑器集成**：在 \QuestionBank.vue\ 中引入 \WangEditor\ 或其他富文本编辑器以支持数学公式的录入。
+- `DATABASE_URL` 是必填项；未配置时后端可以启动，但访问数据库接口会失败。
+- `OPENAI_*` 和 `MINERU_*` 只在使用智能文档解析功能时需要。
+- `server/.env` 已被 `.gitignore` 忽略，不要提交真实密钥。
+
+### 3. 初始化数据库
+
+```bash
+cd server
+npm run migrate
+```
+
+该命令会执行 `server/sql/schema.sql`，创建或补齐项目需要的数据表与字段。
+
+### 4. 启动后端
+
+```bash
+cd server
+npm run dev
+```
+
+默认接口地址：`http://localhost:4000/api`
+
+### 5. 启动前端
+
+```bash
+npm run dev
+```
+
+默认前端地址：`http://localhost:5173`
+
+## 常用命令
+
+```bash
+npm run build        # 前端生产构建
+npm run lint         # 前端 lint
+cd server && npm run migrate
+cd server && npm run dev
+cd server && npm start
+```
+
+## 主要页面
+
+- `/loginregistrationupdatedowl`：登录页
+- `/registrationupdatedimage`：注册页
+- `/teacherdashboard`：教师工作台
+- `/questionbank`：题库管理
+- `/classmanagement`：班级管理
+- `/assignhomework`：布置作业
+- `/teachergrading`：作业批改
+- `/studentdashboard`：学生工作台
+- `/studentclasses`：学生班级
+- `/studenthomeworklist`：学生作业
+- `/practice-session`：练习会话
+- `/studenterrorbook`：错题本
+- `/aiaiassistant`：AI 助手
+
+## 说明
+
+- `server/uploads/` 用于运行期上传文件，默认不提交到 Git。
+- `dist/` 是前端构建产物，默认不提交到 Git。
+- 数据库备份文件 `server/*.dump` 默认不提交到 Git。
