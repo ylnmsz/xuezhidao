@@ -5,12 +5,14 @@ import {
   createSubmission,
   updateSubmission,
   deleteSubmission,
+  getMyRecentPractice,
 } from '../controllers/submissionsController.js'
 import { requireAuth } from '../middleware/auth.js'
 
 const router = Router()
 
 router.get('/', requireAuth, listSubmissions)
+router.get('/me/recent', requireAuth, getMyRecentPractice)
 router.get('/:id', requireAuth, getSubmissionById)
 router.post('/', requireAuth, createSubmission)
 router.put('/:id', requireAuth, updateSubmission)

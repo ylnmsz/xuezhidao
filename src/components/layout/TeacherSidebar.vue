@@ -25,15 +25,22 @@
       >
         <span class="material-symbols-outlined" :data-icon="item.icon">{{ item.icon }}</span>
         <span>{{ item.label }}</span>
+        <span
+          v-if="item.to === '/messages' && unreadCount > 0"
+          class="ml-auto bg-red-500 text-white text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center leading-none"
+        >
+          {{ unreadCount > 99 ? '99+' : unreadCount }}
+        </span>
       </RouterLink>
     </nav>
   </aside>
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { getMe, getStoredUser, saveUser } from '@/services/userService.js'
+import { getUnreadTotal } from '@/services/questionService.js'
 
 const route = useRoute()
 const user = ref(getStoredUser())
@@ -42,12 +49,33 @@ const navItems = [
   { label: '班级管理', to: '/classmanagement', icon: 'groups' },
   { label: '题库管理', to: '/questionbank', icon: 'menu_book' },
   { label: '布置作业', to: '/assignhomework', icon: 'playlist_add' },
+  { label: '作业管理', to: '/homeworkmanagement', icon: 'assignment' },
   { label: '学情分析', to: '/analyticsgrading', icon: 'query_stats' },
+  { label: '排行榜', to: '/teacherrankings', icon: 'leaderboard' },
+  { label: '私信', to: '/messages', icon: 'chat' },
 ]
 
 const isActive = (path) => route.path === path
 
 const displayName = computed(() => user.value?.name || '未登录用户')
+
+// ---- 未读消息 ----
+
+const unreadCount = ref(0)
+let pollInterval = null
+
+async function fetchUnreadCount() {
+  try {
+    const data = await getUnreadTotal()
+    unreadCount.value = data.count
+  } catch {
+    // silently ignore
+  }
+}
+
+function handleMessagesRead() {
+  fetchUnreadCount()
+}
 
 onMounted(async () => {
   try {
@@ -57,5 +85,17 @@ onMounted(async () => {
   } catch {
     // Keep local cached user when API fails.
   }
+
+  await fetchUnreadCount()
+  pollInterval = setInterval(fetchUnreadCount, 30000)
+  window.addEventListener('messages-read', handleMessagesRead)
+})
+
+onUnmounted(() => {
+  if (pollInterval) {
+    clearInterval(pollInterval)
+    pollInterval = null
+  }
+  window.removeEventListener('messages-read', handleMessagesRead)
 })
 </script>

@@ -1,376 +1,592 @@
 <template>
-  <div class="flex h-screen flex-col md:flex-row bg-[#FAFAFA]">
+  <div class="flex min-h-screen">
     <TeacherSidebar />
     <TeacherTopNavbar profile-route="/teacherprofile" />
-    <!-- Main Content Area -->
-    <main class="flex-1 lg:ml-72 p-6 md:p-12 max-w-7xl mx-auto w-full pt-24 md:pt-28">
-      <!-- Header -->
-      <header class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="space-y-2">
-          <button
-            class="flex items-center gap-2 text-primary font-bold hover:gap-3 transition-all"
-            @click="$router.push('/homeworkmanagement')"
-          >
-            <span class="material-symbols-outlined">arrow_back</span>
-            ← 返回作业列表
-          </button>
-          <h2
-            class="text-3xl md:text-4xl font-headline font-extrabold text-on-surface tracking-tight"
-          >
-            每周数学冲刺 #4 - 战况分析 🏆
-          </h2>
-        </div>
-        <div class="flex items-center gap-3 bg-surface-container-low p-2 rounded-full px-6">
-          <span
-            class="material-symbols-outlined text-secondary"
-            style="font-variation-settings: 'FILL' 1"
-            >calendar_today</span
-          >
-          <span class="font-bold text-sm">2023年10月24日</span>
-        </div>
-      </header>
-      <!-- Top Section: Analytics Cards -->
-      <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
-        <!-- Score Stats -->
-        <div
-          class="bg-surface-container-lowest p-8 rounded-lg candy-shadow border-b-4 border-primary-container relative overflow-hidden group"
-        >
-          <div
-            class="absolute -top-4 -right-4 w-24 h-24 bg-primary-container/20 rounded-full blur-2xl"
-          ></div>
-          <div class="flex justify-between items-start mb-6">
-            <h3 class="font-headline font-bold text-lg">平均分概览</h3>
-            <span class="material-symbols-outlined text-primary text-3xl">insights</span>
+
+    <main class="flex-1 lg:ml-72 p-4 md:p-10 pt-24 md:pt-28 space-y-10">
+      <!-- Loading -->
+      <div v-if="loading" class="flex flex-col items-center justify-center py-32 gap-6">
+        <span class="material-symbols-outlined text-6xl text-primary animate-pulse" data-icon="query_stats">query_stats</span>
+        <p class="text-lg text-on-surface-variant font-medium">加载学情数据中...</p>
+      </div>
+
+      <!-- Error -->
+      <div v-else-if="error" class="flex flex-col items-center justify-center py-32 gap-6">
+        <span class="material-symbols-outlined text-6xl text-error" style="font-variation-settings: 'FILL' 1" data-icon="error">error</span>
+        <p class="text-lg text-error font-medium">{{ error }}</p>
+        <button @click="fetchData" class="bg-primary text-white px-8 py-3 rounded-full font-semibold hover:scale-105 transition-all">重新加载</button>
+      </div>
+
+      <template v-else>
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          <div>
+            <h1 class="text-3xl font-extrabold tracking-tight text-primary">学情分析</h1>
+            <p class="text-on-surface-variant mt-1">全面了解班级学习状况与学生表现</p>
           </div>
-          <div class="flex items-end gap-3 h-32 mb-4">
-            <div class="w-full bg-surface-container-high rounded-full h-1/2 relative group">
+          <div class="flex gap-4 items-center">
+            <!-- Class selector -->
+            <div class="relative">
               <div
-                class="absolute bottom-0 w-full bg-error-container rounded-full h-full transition-all duration-1000"
-              ></div>
-            </div>
-            <div class="w-full bg-surface-container-high rounded-full h-full relative">
-              <div
-                class="absolute bottom-0 w-full bg-primary-container rounded-full h-2/3 transition-all duration-1000"
-              ></div>
-            </div>
-            <div class="w-full bg-surface-container-high rounded-full h-full relative">
-              <div
-                class="absolute bottom-0 w-full bg-secondary-container rounded-full h-5/6 transition-all duration-1000"
-              ></div>
-            </div>
-            <div class="w-full bg-surface-container-high rounded-full h-full relative">
-              <div
-                class="absolute bottom-0 w-full bg-tertiary-container rounded-full h-3/4 transition-all duration-1000"
-              ></div>
-            </div>
-          </div>
-          <div class="flex justify-between items-center">
-            <span class="text-4xl font-black text-primary">84.5</span>
-            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-widest"
-              >班级均分</span
-            >
-          </div>
-        </div>
-        <!-- Unsubmitted List -->
-        <div
-          class="bg-surface-container-lowest p-8 rounded-lg candy-shadow border-b-4 border-outline-variant"
-        >
-          <div class="flex justify-between items-start mb-6">
-            <h3 class="font-headline font-bold text-lg">未提交名单 (4)</h3>
-            <span class="material-symbols-outlined text-outline text-3xl">pending_actions</span>
-          </div>
-          <div class="flex flex-wrap gap-4">
-            <div class="flex flex-col items-center gap-2 group">
-              <div
-                class="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border-2 border-transparent group-hover:border-outline transition-all"
+                @click="showClassDropdown = !showClassDropdown"
+                class="bg-surface-container-low px-6 py-3 rounded-full flex items-center gap-3 diffused-shadow cursor-pointer hover:bg-white transition-all"
               >
-                <span class="material-symbols-outlined text-outline-variant">person</span>
+                <span class="material-symbols-outlined text-primary" data-icon="groups">groups</span>
+                <span class="font-semibold text-on-surface">{{ selectedClass?.name || '选择班级' }}</span>
+                <span class="material-symbols-outlined text-outline" data-icon="expand_more">expand_more</span>
               </div>
-              <span class="text-xs font-bold">李小明</span>
-            </div>
-            <div class="flex flex-col items-center gap-2 group">
               <div
-                class="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border-2 border-transparent group-hover:border-outline transition-all"
+                v-if="showClassDropdown"
+                class="absolute top-full right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-surface-container-low z-20 overflow-hidden max-h-72 overflow-y-auto"
               >
-                <span class="material-symbols-outlined text-outline-variant">person</span>
+                <div
+                  v-for="cls in classes"
+                  :key="cls.id"
+                  @click="selectClass(cls)"
+                  class="px-6 py-4 hover:bg-primary-container/20 cursor-pointer transition-colors"
+                  :class="selectedClassId === cls.id ? 'text-primary bg-primary-container/10 font-semibold' : 'text-on-surface'"
+                >{{ cls.name }}</div>
+                <div v-if="classes.length === 0" class="px-6 py-4 text-on-surface-variant text-center">暂无班级</div>
               </div>
-              <span class="text-xs font-bold">王大锤</span>
-            </div>
-            <div class="flex flex-col items-center gap-2 group">
-              <div
-                class="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border-2 border-transparent group-hover:border-outline transition-all"
-              >
-                <span class="material-symbols-outlined text-outline-variant">person</span>
-              </div>
-              <span class="text-xs font-bold">赵美美</span>
-            </div>
-            <div class="flex flex-col items-center gap-2 group">
-              <div
-                class="w-12 h-12 bg-surface-container rounded-full flex items-center justify-center border-2 border-transparent group-hover:border-outline transition-all"
-              >
-                <span class="material-symbols-outlined text-outline-variant">person</span>
-              </div>
-              <span class="text-xs font-bold">周周</span>
             </div>
           </div>
-          <button
-            class="mt-6 w-full py-3 bg-surface-container-low text-on-surface-variant font-bold rounded-full hover:bg-surface-container transition-colors"
-          >
-            一键提醒
-          </button>
+        </header>
+
+        <!-- No class selected -->
+        <div v-if="!selectedClassId" class="flex flex-col items-center justify-center py-32 gap-6">
+          <span class="material-symbols-outlined text-6xl text-on-surface-variant" data-icon="school">school</span>
+          <p class="text-xl text-on-surface-variant font-medium">请选择一个班级查看学情</p>
         </div>
-        <!-- Common Mistakes -->
-        <div
-          class="bg-surface-container-lowest p-8 rounded-lg candy-shadow border-b-4 border-tertiary-container relative overflow-hidden"
-        >
-          <div
-            class="absolute -top-10 -right-10 w-32 h-32 bg-tertiary-container/10 rounded-full"
-          ></div>
-          <div class="flex justify-between items-start mb-6">
-            <h3 class="font-headline font-bold text-lg">易错重难点</h3>
-            <span
-              class="material-symbols-outlined text-tertiary-container text-3xl"
-              style="font-variation-settings: 'FILL' 1"
-              >local_fire_department</span
-            >
-          </div>
-          <div class="space-y-3">
-            <div class="flex items-center gap-3 p-3 bg-error/5 rounded-xl border border-error/10">
-              <span class="font-black text-error">Q3</span>
-              <div class="flex-1">
-                <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-                  <div class="h-full bg-error rounded-full" style="width: 78%"></div>
+
+        <template v-else>
+          <!-- Overview Cards -->
+          <section class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-surface-container-lowest p-6 rounded-xl diffused-shadow border-l-4 border-primary">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-primary" data-icon="groups">groups</span>
                 </div>
+                <span class="text-sm font-bold text-on-surface-variant">班级人数</span>
               </div>
-              <span class="text-xs font-bold">78% 错率</span>
+              <p class="text-3xl font-black font-headline">{{ analytics.summary.totalStudents }}</p>
             </div>
-            <div
-              class="flex items-center gap-3 p-3 bg-tertiary/5 rounded-xl border border-tertiary/10"
-            >
-              <span class="font-black text-tertiary">Q7</span>
-              <div class="flex-1">
-                <div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
-                  <div class="h-full bg-tertiary rounded-full" style="width: 45%"></div>
+
+            <div class="bg-surface-container-lowest p-6 rounded-xl diffused-shadow border-l-4 border-secondary">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-secondary" data-icon="bolt">bolt</span>
                 </div>
+                <span class="text-sm font-bold text-on-surface-variant">平均战力</span>
               </div>
-              <span class="text-xs font-bold">45% 错率</span>
+              <p class="text-3xl font-black font-headline">{{ analytics.summary.avgCombatPower }}</p>
             </div>
-          </div>
-        </div>
-      </section>
-      <!-- Bottom Section: Student List -->
-      <section>
-        <div class="flex items-center gap-8 mb-8 border-b-2 border-surface-container">
-          <button class="pb-4 text-primary font-bold border-b-4 border-primary px-2 transition-all">
-            已批改 (32)
-          </button>
-          <button
-            class="pb-4 text-on-surface-variant font-bold border-b-4 border-transparent px-2 hover:text-primary transition-all"
-          >
-            待批改 (12)
-          </button>
-        </div>
-        <div class="space-y-6">
-          <!-- Individual Student Card - Graded -->
-          <div class="bg-surface-container-lowest rounded-lg candy-shadow overflow-hidden group">
-            <div class="p-6 flex items-center justify-between flex-wrap gap-4">
-              <div class="flex items-center gap-4">
-                <img
-                  alt="Student Avatar"
-                  class="w-14 h-14 rounded-full object-cover ring-4 ring-primary-container/20"
-                  data-alt="cheerful young boy student with messy hair smiling in a bright classroom setting soft focus"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCt9lsakA1MsrbyoH-f0isxdj-VLKTRIm1x2Db6F2Q2S0Cg7elc0edh6xj6DV3XzWFa5D8v9Iw8tfyxeDUpon0oiAf3RIYdnorwTedH3O2FcyoOiDlNPvQ1XQukpDqMnTWP3eZ9J8WZYOhc2Vje-QOIST4Gil-_SbLBprtlHafrJuErq5WoiMF_YWEl4dCXWyoiLs9GSPGe-4OF3QaUWvwXTqd7vtW8FRyDiPZmoEwQlgxf1ltWQQkzBjeFZmoVmctcCaKVmoJs2Hb"
-                />
-                <div>
-                  <h4 class="font-headline font-bold text-lg">张三</h4>
-                  <p class="text-xs font-medium text-on-surface-variant italic">
-                    提交于: 10月23日 18:45
-                  </p>
+
+            <div class="bg-surface-container-lowest p-6 rounded-xl diffused-shadow border-l-4 border-tertiary">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-tertiary" data-icon="check_circle">check_circle</span>
                 </div>
+                <span class="text-sm font-bold text-on-surface-variant">平均正确率</span>
               </div>
-              <div class="flex items-center gap-8">
-                <div class="text-center">
-                  <div class="text-2xl font-black text-secondary">95</div>
-                  <div class="text-[10px] font-bold text-on-surface-variant uppercase">
-                    最终得分
-                  </div>
-                </div>
-                <button
-                  class="px-6 py-3 bg-primary-container text-on-primary-container font-bold rounded-full flex items-center gap-2 bouncy-hover"
-                >
-                  Grade 📝
-                  <span class="material-symbols-outlined text-sm">expand_more</span>
-                </button>
-              </div>
+              <p class="text-3xl font-black font-headline">{{ analytics.summary.avgAccuracy }}%</p>
             </div>
-          </div>
-          <!-- Individual Student Card - Pending/Active Accordion -->
-          <div
-            class="bg-surface-container-lowest rounded-lg candy-shadow ring-4 ring-primary/10 overflow-hidden"
-          >
-            <div
-              class="p-6 flex items-center justify-between border-b border-surface-container-low flex-wrap gap-4"
-            >
-              <div class="flex items-center gap-4">
-                <img
-                  alt="Student Avatar"
-                  class="w-14 h-14 rounded-full object-cover ring-4 ring-tertiary-container/20"
-                  data-alt="young school girl student with glasses and ponytail focused and smiling brightly high-end portrait"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6c9LMdxwZzapNHIRufm2aFW9XgBj1tN1mF2jAFcFi_NC3TTB_witRa1YkXdf5-_YyUOXnCQystzgyoidzxZQvEvNNHyPLrdDzEqS8N12VjQkCLr14QHwOM_-6-FqzktsfqwUplcly9I-zk2mWdoUDsnFsO_sQlnh4fDTxTPv2G66KN7hLqyfNj2_vDsSkrRUj85_otatfhIfXr8WSrOHs-qGPyvONDarGC5a8ZF3WquVqgIFRxsR9GavBVRE6gG4eU0XHdKJGtPQA"
-                />
-                <div>
-                  <h4 class="font-headline font-bold text-lg">林萌萌</h4>
-                  <p class="text-xs font-medium text-on-surface-variant italic">
-                    提交于: 10月24日 09:12
-                  </p>
+
+            <div class="bg-surface-container-lowest p-6 rounded-xl diffused-shadow border-l-4 border-error">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                  <span class="material-symbols-outlined text-orange-500" style="font-variation-settings: 'FILL' 1" data-icon="local_fire_department">local_fire_department</span>
                 </div>
+                <span class="text-sm font-bold text-on-surface-variant">平均连续学习</span>
               </div>
-              <div class="flex items-center gap-8">
-                <div class="text-center px-4 py-2 bg-surface-container-low rounded-xl">
-                  <div class="text-2xl font-black text-on-surface-variant">--</div>
-                  <div class="text-[10px] font-bold text-on-surface-variant uppercase">待打分</div>
-                </div>
-                <button
-                  class="px-6 py-3 bg-primary text-on-primary font-bold rounded-full flex items-center gap-2 shadow-lg shadow-primary/20"
-                >
-                  Grade 📝
-                  <span class="material-symbols-outlined text-sm">expand_less</span>
-                </button>
-              </div>
+              <p class="text-3xl font-black font-headline">{{ analytics.summary.avgStreak }} 天</p>
             </div>
-            <!-- Expanded View -->
-            <div class="p-8 bg-surface-container-lowest">
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                <!-- Answer Content -->
-                <div class="space-y-6">
-                  <div
-                    class="bg-surface p-6 rounded-lg border-2 border-dashed border-outline-variant/30"
-                  >
-                    <h5 class="font-bold mb-4 text-primary flex items-center gap-2">
-                      <span class="material-symbols-outlined">attachment</span>
-                      学生提交的附件 (图片/PDF)
-                    </h5>
+          </section>
+
+          <!-- Charts Row -->
+          <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Score Distribution -->
+            <div class="bg-surface-container-lowest rounded-xl p-8 diffused-shadow">
+              <h3 class="font-headline font-bold text-lg mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary" data-icon="bar_chart">bar_chart</span>
+                正确率分布
+              </h3>
+              <div class="space-y-4">
+                <div v-for="bucket in analytics.distribution" :key="bucket.label" class="flex items-center gap-4">
+                  <span class="w-16 text-sm font-bold text-on-surface-variant shrink-0">{{ bucket.label }}分</span>
+                  <div class="flex-1 h-7 bg-surface-container-high rounded-full overflow-hidden relative">
                     <div
-                      class="aspect-video bg-white rounded-lg border shadow-inner flex items-center justify-center overflow-hidden"
+                      class="h-full rounded-full transition-all duration-1000 flex items-center justify-end pr-3"
+                      :class="distributionBarClass(bucket)"
+                      :style="{ width: distributionPercent(bucket) + '%' }"
                     >
-                      <img
-                        alt="Handwritten Math Homework"
-                        class="w-full h-full object-cover opacity-80"
-                        data-alt="handwritten math equations and geometric sketches on graph paper with pencil and ruler soft natural light"
-                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuAq-reFthaoVyK60q1z3YHBmG755Qh77a2uhyJf-wJ2jdsiB4j9qMz2U3vM3ziW7m84CAYCx47w-3lOJzq1r_HGR7BsQN89k-XWMqPonnL4NKvo8BTtHQocW76LARLaYgC0lbza9fULjsplbWc8jnBVK8yV7q_Q5R59Qb8jxlqioaB6vS-TqXJOCI_wjx-NjI3fobMIFULW_S10ngMMKt76Rq_Y9-JJu0xt2mNEqegBoyqy2H3Y7j3ZGWrX29ZrMQwAnzvfjpQymsyW"
-                      />
+                      <span v-if="distributionPercent(bucket) > 15" class="text-xs font-bold text-white drop-shadow">
+                        {{ bucket.count }}人
+                      </span>
                     </div>
                   </div>
-                  <div class="bg-surface-container-low p-6 rounded-lg">
-                    <p class="font-medium text-on-surface leading-relaxed">
-                      "老师，这道题关于多项式的合并同类项，我先提取了公因式
-                      2x，然后再进行括号内的运算，得出的结果是 2x(x²+3)..."
-                    </p>
-                  </div>
-                </div>
-                <!-- Grading Controls -->
-                <div class="space-y-8">
-                  <div>
-                    <label class="block font-headline font-extrabold text-xl mb-4 text-on-surface"
-                      >打分 🖋️</label
-                    >
-                    <div class="flex items-center gap-4">
-                      <input
-                        class="w-32 h-20 text-4xl font-black text-center text-error border-4 border-error/20 focus:border-error focus:ring-0 rounded-xl bg-error/5 placeholder:text-error/20"
-                        placeholder="0-100"
-                        type="number"
-                      />
-                      <span class="text-4xl font-black text-outline-variant">/ 100</span>
-                    </div>
-                  </div>
-                  <div>
-                    <label class="block font-bold mb-4">快捷评语</label>
-                    <div class="flex flex-wrap gap-3">
-                      <button
-                        class="px-5 py-2 bg-secondary/10 text-secondary border-2 border-secondary/20 rounded-full font-bold bouncy-hover"
-                      >
-                        🌟 完美解答
-                      </button>
-                      <button
-                        class="px-5 py-2 bg-tertiary/10 text-tertiary border-2 border-tertiary/20 rounded-full font-bold bouncy-hover"
-                      >
-                        🤔 思路有点偏
-                      </button>
-                      <button
-                        class="px-5 py-2 bg-primary/10 text-primary border-2 border-primary/20 rounded-full font-bold bouncy-hover"
-                      >
-                        👍 继续保持
-                      </button>
-                      <button
-                        class="px-5 py-2 bg-error/10 text-error border-2 border-error/20 rounded-full font-bold bouncy-hover"
-                      >
-                        ✍️ 需要重写
-                      </button>
-                    </div>
-                  </div>
-                  <div>
-                    <textarea
-                      class="w-full rounded-lg border-2 border-surface-container-high bg-surface-container-low p-4 focus:ring-primary focus:border-primary font-medium"
-                      placeholder="输入详细评语..."
-                      rows="4"
-                    ></textarea>
-                  </div>
-                  <div class="flex gap-4">
-                    <button
-                      class="flex-1 py-4 bg-primary text-on-primary font-bold rounded-full shadow-lg hover:brightness-110 active:scale-95 transition-all"
-                    >
-                      确认并保存
-                    </button>
-                    <button
-                      class="px-8 py-4 bg-surface-container-high text-on-surface-variant font-bold rounded-full hover:bg-surface-container-highest transition-all"
-                    >
-                      存为草稿
-                    </button>
-                  </div>
+                  <span v-if="distributionPercent(bucket) <= 15" class="text-xs font-bold text-on-surface-variant w-8 shrink-0">
+                    {{ bucket.count }}人
+                  </span>
                 </div>
               </div>
             </div>
-          </div>
-          <!-- Student Card - More examples -->
-          <div
-            class="bg-surface-container-lowest rounded-lg candy-shadow overflow-hidden group opacity-60"
-          >
-            <div class="p-6 flex items-center justify-between flex-wrap gap-4">
-              <div class="flex items-center gap-4">
-                <img
-                  alt="Student Avatar"
-                  class="w-14 h-14 rounded-full object-cover grayscale"
-                  data-alt="portrait of a focused teenage male student in a library setting cinematic lighting dark tones"
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpEG3MB5YbRSfRItXnooeQil90stUqnJKNeJBFv5oqNPP2F4qO9B2mYveNLYjG4atVYxulPKo0o-WTVcuC_ims6QrBJQCFon3Xdoqo2MtNU_gYiWx8b-740NsnHIj46Vj6Ntb6Ck6WWgiApMSNsKWhg-G6L-RIixq-NwHuFioouA-50pWPEKEwoH4rlm_ITC0bPPGPWSQawqcgNR3RRz3z2y_dz_pp4n7aw6ocRBX2Qdunm-YOgDnR9rYp_qLjhWBfUNVOo_qNCFy0"
+
+            <!-- Subject Performance -->
+            <div class="bg-surface-container-lowest rounded-xl p-8 diffused-shadow">
+              <h3 class="font-headline font-bold text-lg mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary" data-icon="auto_graph">auto_graph</span>
+                学科表现
+              </h3>
+              <div v-if="analytics.subjectPerformance.length > 0" class="space-y-5">
+                <div v-for="sub in analytics.subjectPerformance" :key="sub.subject" class="group">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-bold">{{ sub.subject }}</span>
+                    <span class="text-sm font-black" :class="scoreTextColor(Number(sub.avg_score))">{{ sub.avg_score }}分</span>
+                  </div>
+                  <div class="h-3 bg-surface-container-high rounded-full overflow-hidden">
+                    <div
+                      class="h-full rounded-full transition-all duration-1000"
+                      :class="scoreBarClass(Number(sub.avg_score))"
+                      :style="{ width: Math.min(Number(sub.avg_score || 0), 100) + '%' }"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="flex flex-col items-center justify-center py-12 text-on-surface-variant gap-2">
+                <span class="material-symbols-outlined text-4xl" data-icon="science">science</span>
+                <p class="text-sm">暂无学科数据，布置作业后将自动分析</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Top & Bottom Performers -->
+          <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Top Performers -->
+            <div class="bg-surface-container-lowest rounded-xl p-8 diffused-shadow">
+              <h3 class="font-headline font-bold text-lg mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-amber-500" style="font-variation-settings: 'FILL' 1" data-icon="stars">stars</span>
+                优秀学员 Top 5
+              </h3>
+              <div v-if="analytics.topPerformers.length > 0" class="space-y-4">
+                <div
+                  v-for="(s, i) in analytics.topPerformers"
+                  :key="s.id"
+                  class="flex items-center gap-4 p-3 rounded-xl hover:bg-primary-container/10 transition-all"
+                >
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
+                    :class="['bg-amber-100', 'text-amber-700']"
+                  >{{ i + 1 }}</div>
+                  <img :src="avatarSrc(s)" class="w-10 h-10 rounded-full object-cover" alt="" />
+                  <div class="flex-1">
+                    <p class="font-bold text-sm">{{ s.name }}</p>
+                    <p class="text-xs text-on-surface-variant">Lv.{{ s.level }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-black text-primary">{{ s.combat_power }}</p>
+                    <p class="text-xs text-on-surface-variant">战力</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-black text-secondary">{{ Number(s.accuracy || 0).toFixed(1) }}%</p>
+                    <p class="text-xs text-on-surface-variant">正确率</p>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="flex items-center justify-center py-12 text-on-surface-variant">
+                <p class="text-sm">暂无数据</p>
+              </div>
+            </div>
+
+            <!-- Bottom Performers -->
+            <div class="bg-surface-container-lowest rounded-xl p-8 diffused-shadow">
+              <h3 class="font-headline font-bold text-lg mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1" data-icon="priority_high">priority_high</span>
+                需要关注
+              </h3>
+              <div v-if="analytics.bottomPerformers.length > 0" class="space-y-4">
+                <div
+                  v-for="(s, i) in analytics.bottomPerformers"
+                  :key="s.id"
+                  class="flex items-center gap-4 p-3 rounded-xl hover:bg-error/5 transition-all"
+                >
+                  <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm bg-error/10 text-error">
+                    {{ i + 1 }}
+                  </div>
+                  <img :src="avatarSrc(s)" class="w-10 h-10 rounded-full object-cover" alt="" />
+                  <div class="flex-1">
+                    <p class="font-bold text-sm">{{ s.name }}</p>
+                    <p class="text-xs text-on-surface-variant">Lv.{{ s.level }}</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-black text-error">{{ s.combat_power }}</p>
+                    <p class="text-xs text-on-surface-variant">战力</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-black text-tertiary">{{ Number(s.accuracy || 0).toFixed(1) }}%</p>
+                    <p class="text-xs text-on-surface-variant">正确率</p>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="flex items-center justify-center py-12 text-on-surface-variant">
+                <p class="text-sm">暂无数据</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- Student List Table -->
+          <section class="bg-surface-container-lowest rounded-xl overflow-hidden diffused-shadow">
+            <div class="p-6 border-b border-surface-container-low flex justify-between items-center">
+              <h3 class="font-headline font-bold text-lg flex items-center gap-2">
+                <span class="material-symbols-outlined text-primary" data-icon="group">group</span>
+                学生表现全部列表
+              </h3>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+                <input
+                  v-model="searchQuery"
+                  class="pl-9 pr-4 py-2 bg-surface-container rounded-full border-none focus:ring-2 focus:ring-primary/50 text-sm w-48"
+                  placeholder="搜索学生..."
+                  type="text"
                 />
-                <div>
-                  <h4 class="font-headline font-bold text-lg text-on-surface-variant">刘洋</h4>
-                  <p class="text-xs font-medium italic">尚未提交</p>
+              </div>
+            </div>
+
+            <div v-if="filteredStudents.length === 0" class="flex flex-col items-center justify-center py-20 gap-4">
+              <span class="material-symbols-outlined text-5xl text-on-surface-variant" data-icon="group_off">group_off</span>
+              <p class="text-on-surface-variant font-medium">{{ searchQuery ? '未找到匹配的学生' : '暂无学生数据' }}</p>
+            </div>
+
+            <div v-else class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="text-on-surface-variant text-sm font-semibold">
+                    <th class="px-6 py-4 cursor-pointer hover:text-primary transition-colors" @click="toggleSort('combat_power')">
+                      <span class="flex items-center gap-1">
+                        排名
+                        <span class="material-symbols-outlined text-xs">unfold_more</span>
+                      </span>
+                    </th>
+                    <th class="px-6 py-4">学员</th>
+                    <th class="px-6 py-4">等级</th>
+                    <th class="px-6 py-4 cursor-pointer hover:text-primary transition-colors" @click="toggleSort('combat_power')">
+                      <span class="flex items-center gap-1">
+                        战力
+                        <span class="material-symbols-outlined text-xs">unfold_more</span>
+                      </span>
+                    </th>
+                    <th class="px-6 py-4 cursor-pointer hover:text-primary transition-colors" @click="toggleSort('accuracy')">
+                      <span class="flex items-center gap-1">
+                        正确率
+                        <span class="material-symbols-outlined text-xs">unfold_more</span>
+                      </span>
+                    </th>
+                    <th class="px-6 py-4 cursor-pointer hover:text-primary transition-colors" @click="toggleSort('streak_days')">
+                      <span class="flex items-center gap-1">
+                        连续学习
+                        <span class="material-symbols-outlined text-xs">unfold_more</span>
+                      </span>
+                    </th>
+                    <th class="px-6 py-4">作业数</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container-low">
+                  <tr
+                    v-for="(s, i) in sortedStudents"
+                    :key="s.id"
+                    class="hover:bg-primary-container/5 transition-colors"
+                  >
+                    <td class="px-6 py-4">
+                      <span
+                        class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs"
+                        :class="rankBadgeClass(i + 1)"
+                      >{{ i + 1 }}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-3">
+                        <img :src="avatarSrc(s)" class="w-9 h-9 rounded-full object-cover" alt="" />
+                        <span class="font-semibold text-sm">{{ s.name }}</span>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="font-bold text-sm">Lv.{{ s.level }}</span></td>
+                    <td class="px-6 py-4"><span class="font-bold text-primary">{{ s.combat_power }}</span></td>
+                    <td class="px-6 py-4">
+                      <span class="font-bold" :class="s.accuracy >= 70 ? 'text-secondary' : 'text-tertiary'">
+                        {{ Number(s.accuracy || 0).toFixed(1) }}%
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">
+                      <div class="flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm" :class="s.streak_days > 0 ? 'text-orange-400' : 'text-on-surface-variant'" style="font-variation-settings: 'FILL' 1" data-icon="local_fire_department">local_fire_department</span>
+                        <span class="font-medium text-sm">{{ s.streak_days || 0 }}天</span>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="text-sm">{{ s.homework_done || 0 }}</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Error Topics & Recent Homework -->
+          <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Weak areas / Error-prone topics -->
+            <div class="bg-surface-container-lowest rounded-xl p-8 diffused-shadow">
+              <h3 class="font-headline font-bold text-lg mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-error" style="font-variation-settings: 'FILL' 1" data-icon="warning">warning</span>
+                易错知识点
+              </h3>
+              <div v-if="analytics.errorTopics.length > 0" class="space-y-4">
+                <div
+                  v-for="topic in analytics.errorTopics"
+                  :key="topic.content + topic.subject"
+                  class="flex items-center gap-3 p-3 rounded-xl bg-error/5 border border-error/10"
+                >
+                  <div class="w-10 h-10 rounded-full bg-error/10 flex items-center justify-center shrink-0">
+                    <span class="font-black text-error text-sm">{{ topic.error_count }}</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-bold truncate" v-html="renderStem(topic.content)"></p>
+                    <p class="text-xs text-on-surface-variant">{{ topic.subject }}</p>
+                  </div>
+                  <div class="text-xs font-bold text-error shrink-0">{{ topic.error_count }}次</div>
                 </div>
               </div>
-              <button
-                class="px-6 py-3 border-2 border-outline-variant text-on-surface-variant font-bold rounded-full cursor-not-allowed"
-              >
-                Grade 📝
-              </button>
+              <div v-else class="flex flex-col items-center justify-center py-12 text-on-surface-variant gap-2">
+                <span class="material-symbols-outlined text-4xl" data-icon="check_circle">check_circle</span>
+                <p class="text-sm">暂无易错题数据</p>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
+
+            <!-- Recent homework -->
+            <div class="bg-surface-container-lowest rounded-xl p-8 diffused-shadow">
+              <h3 class="font-headline font-bold text-lg mb-6 flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary" data-icon="history_edu">history_edu</span>
+                最近作业统计
+              </h3>
+              <div v-if="analytics.assignments.recent.length > 0" class="space-y-4">
+                <div
+                  v-for="hw in analytics.assignments.recent"
+                  :key="hw.id"
+                  class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-low/50 hover:bg-surface-container-low transition-all"
+                >
+                  <div class="flex-1 min-w-0">
+                    <p class="font-bold text-sm truncate">{{ hw.title }}</p>
+                    <p class="text-xs text-on-surface-variant">{{ hw.submission_count }} 人提交</p>
+                  </div>
+                  <div class="text-right shrink-0">
+                    <p class="font-black" :class="hw.avg_score ? scoreTextColor(Number(hw.avg_score)) : 'text-on-surface-variant'">
+                      {{ hw.avg_score || '--' }}
+                    </p>
+                    <p class="text-xs text-on-surface-variant">{{ hw.avg_score ? '均分' : '未批改' }}</p>
+                  </div>
+                </div>
+              </div>
+              <div v-else class="flex flex-col items-center justify-center py-12 text-on-surface-variant gap-2">
+                <span class="material-symbols-outlined text-4xl" data-icon="library_books">library_books</span>
+                <p class="text-sm">暂无作业数据</p>
+              </div>
+            </div>
+          </section>
+        </template>
+      </template>
     </main>
-    <!-- Floating Cloud Decors (Asymmetric Playground Style) -->
-    <div class="fixed top-20 right-10 -z-10 opacity-10 animate-pulse pointer-events-none">
-      <span class="material-symbols-outlined text-[120px]">cloud</span>
-    </div>
-    <div class="fixed bottom-40 left-80 -z-10 opacity-5 pointer-events-none">
-      <span class="material-symbols-outlined text-[180px]">circle</span>
-    </div>
   </div>
 </template>
 
 <script setup>
+import { ref, computed, onMounted } from 'vue'
 import TeacherTopNavbar from '@/components/layout/TeacherTopNavbar.vue'
 import TeacherSidebar from '@/components/layout/TeacherSidebar.vue'
+import { listClasses, getClassAnalytics } from '@/services/questionService.js'
+import { getMe } from '@/services/userService.js'
+import { API_BASE } from '@/services/api.js'
+import { renderMathWithHtml } from '@/utils/renderMath.js'
+
+const loading = ref(true)
+const error = ref('')
+const classes = ref([])
+const selectedClassId = ref(null)
+const selectedClass = ref(null)
+const showClassDropdown = ref(false)
+const searchQuery = ref('')
+const sortField = ref('combat_power')
+const sortDir = ref('desc')
+
+const analytics = ref({
+  classInfo: null,
+  summary: { totalStudents: 0, avgCombatPower: 0, avgAccuracy: '0.0', avgStreak: 0 },
+  distribution: [],
+  topPerformers: [],
+  bottomPerformers: [],
+  subjectPerformance: [],
+  errorTopics: [],
+  assignments: { total: 0, published: 0, recent: [] },
+  students: [],
+})
+
+const maxDistributionCount = computed(() => {
+  const counts = analytics.value.distribution.map(b => b.count)
+  return Math.max(...counts, 1)
+})
+
+function distributionPercent(bucket) {
+  return (bucket.count / maxDistributionCount.value) * 100
+}
+
+function distributionBarClass(bucket) {
+  if (bucket.label === '90-100') return 'bg-gradient-to-r from-secondary to-secondary-fixed-dim'
+  if (bucket.label === '80-89') return 'bg-gradient-to-r from-primary to-primary-fixed-dim'
+  if (bucket.label === '70-79') return 'bg-gradient-to-r from-tertiary to-tertiary-fixed-dim'
+  if (bucket.label === '60-69') return 'bg-gradient-to-r from-orange-400 to-orange-500'
+  return 'bg-gradient-to-r from-error to-error-dim'
+}
+
+function getStemFromContent(content) {
+  if (!content) return ''
+  try {
+    const parsed = JSON.parse(content)
+    if (parsed.stem) return parsed.stem
+    if (parsed.passage) return parsed.passage
+    return ''
+  } catch {
+    // 纯文本回退：按选项标记截取
+    const match = content.match(/(?:^|\n)\s*[A-Za-z][.、)）]\s*/)
+    if (match) return content.slice(0, match.index).trim()
+    return content.trim()
+  }
+}
+
+function resolveImageUrl(url) {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  const base = (import.meta.env.VITE_API_BASE || 'http://localhost:4000/api').replace(/\/api\/?$/, '')
+  return `${base}${url.startsWith('/') ? '' : '/'}${url}`
+}
+
+function convertImagePlaceholders(text) {
+  if (!text) return ''
+  return text.replace(/\[img:([^\]]+)\]/g, (_, url) => {
+    const resolved = resolveImageUrl(url.trim())
+    return `<img src="${resolved}" alt="题目图片" class="max-w-full h-auto rounded-lg my-1" />`
+  })
+}
+
+function renderStem(content) {
+  const stem = getStemFromContent(content)
+  return renderMathWithHtml(convertImagePlaceholders(stem))
+}
+
+function scoreTextColor(score) {
+  if (score >= 80) return 'text-secondary'
+  if (score >= 60) return 'text-primary'
+  if (score >= 40) return 'text-tertiary'
+  return 'text-error'
+}
+
+function scoreBarClass(score) {
+  if (score >= 80) return 'bg-gradient-to-r from-secondary to-secondary-fixed-dim'
+  if (score >= 60) return 'bg-gradient-to-r from-primary to-primary-fixed-dim'
+  if (score >= 40) return 'bg-gradient-to-r from-tertiary to-tertiary-fixed-dim'
+  return 'bg-gradient-to-r from-error to-error-dim'
+}
+
+function rankBadgeClass(rank) {
+  if (rank === 1) return 'bg-amber-100 text-amber-700'
+  if (rank === 2) return 'bg-slate-100 text-slate-600'
+  if (rank === 3) return 'bg-orange-100 text-orange-700'
+  return 'bg-surface-container text-on-surface-variant'
+}
+
+function resolveAvatarUrl(url) {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  if (url.startsWith('/uploads')) return `${API_BASE.replace(/\/api\/?$/, '')}${url}`
+  return url
+}
+
+function avatarSrc(item) {
+  if (item.avatar_url) return resolveAvatarUrl(item.avatar_url)
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(item.name || '?')}&background=0891b2&color=fff&bold=true`
+}
+
+const filteredStudents = computed(() => {
+  let list = analytics.value.students
+  if (searchQuery.value) {
+    const q = searchQuery.value.toLowerCase()
+    list = list.filter(s => s.name.toLowerCase().includes(q))
+  }
+  return list
+})
+
+const sortedStudents = computed(() => {
+  const list = [...filteredStudents.value]
+  const dir = sortDir.value === 'asc' ? 1 : -1
+  list.sort((a, b) => {
+    const va = Number(a[sortField.value] || 0)
+    const vb = Number(b[sortField.value] || 0)
+    return (va - vb) * dir
+  })
+  return list
+})
+
+function toggleSort(field) {
+  if (sortField.value === field) {
+    sortDir.value = sortDir.value === 'desc' ? 'asc' : 'desc'
+  } else {
+    sortField.value = field
+    sortDir.value = 'desc'
+  }
+}
+
+async function selectClass(cls) {
+  showClassDropdown.value = false
+  selectedClassId.value = cls.id
+  selectedClass.value = cls
+  await fetchAnalytics()
+}
+
+async function fetchAnalytics() {
+  if (!selectedClassId.value) return
+  try {
+    const data = await getClassAnalytics(selectedClassId.value)
+    analytics.value = data
+  } catch (e) {
+    error.value = '加载学情数据失败'
+  } finally {
+    loading.value = false
+  }
+}
+
+async function fetchData() {
+  loading.value = true
+  error.value = ''
+  try {
+    const user = await getMe()
+    const data = await listClasses({ teacherId: user.id })
+    classes.value = data.items || []
+
+    if (classes.value.length > 0) {
+      await selectClass(classes.value[0])
+    } else {
+      loading.value = false
+    }
+  } catch (e) {
+    error.value = '加载班级列表失败'
+    loading.value = false
+  }
+}
+
+onMounted(fetchData)
 </script>
 
-<style scoped></style>
+<style scoped>
+.material-symbols-outlined {
+  font-variation-settings:
+    'FILL' 0,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
+}
+.diffused-shadow {
+  box-shadow: 0 40px 60px -15px rgba(0, 100, 121, 0.08);
+}
+</style>

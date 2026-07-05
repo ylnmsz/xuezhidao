@@ -20,16 +20,15 @@
                 style="font-variation-settings: 'FILL' 1"
                 >local_fire_department</span
               >
-              连续学习 5 天
+              {{ streakDisplay }}
             </div>
             <h1 class="text-4xl md:text-5xl font-black font-headline leading-tight">
-              早上好，<br />小明！
+              {{ greeting }}，<br />{{ displayName }}！
             </h1>
             <p class="text-on-primary/80 font-medium">
-              表现不错！今日目标：再获得 50 经验值即可升级！
+              {{ progressHint }}
             </p>
           </div>
-          <!-- Mascot Illustration Area Removed -->
         </section>
         <!-- Task Board -->
         <section>
@@ -46,78 +45,39 @@
               <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
             </button>
           </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Task Card 1: Breathing Effect -->
+          <div class="grid grid-cols-1 gap-6">
+            <!-- Level Card -->
             <div
               class="bg-surface-container-lowest p-6 rounded-lg shadow-sm border border-outline-variant/10 breathing-glow relative group"
             >
-              <div class="flex justify-between items-start mb-4">
+              <div class="flex items-center gap-4 mb-4">
                 <div
-                  class="w-12 h-12 bg-primary-container rounded-2xl flex items-center justify-center text-primary"
+                  class="w-14 h-14 bg-gradient-to-br from-primary to-secondary rounded-2xl flex items-center justify-center text-white text-2xl font-black shadow-lg"
                 >
-                  <span class="material-symbols-outlined text-3xl" data-icon="functions"
-                    >functions</span
-                  >
+                  {{ stats.level || '?' }}
                 </div>
-                <span
-                  class="bg-error-container text-on-error-container text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-tighter"
-                  >0/15 已完成</span
-                >
+                <div>
+                  <h4 class="text-lg font-bold">当前等级 Lv.{{ stats.level || '?' }}</h4>
+                  <p class="text-sm text-on-surface-variant">
+                    总积分 {{ stats.points || 0 }} / {{ stats.next_level_points || 100 }}
+                  </p>
+                </div>
               </div>
-              <h4 class="text-lg font-bold mb-1">高等代数 II</h4>
-              <p class="text-sm text-on-surface-variant mb-6">第 4 章：二次方程</p>
-              <div class="space-y-2 mb-6">
+              <div class="space-y-2 mb-4">
                 <div class="flex justify-between text-xs font-bold text-on-surface-variant">
-                  <span>进度</span>
-                  <span>0/15 已完成</span>
-                </div>
-                <div class="h-3 w-full bg-surface-container-high rounded-full overflow-hidden">
-                  <div class="h-full bg-surface-variant w-[0%] transition-all duration-1000"></div>
-                </div>
-              </div>
-              <button
-                class="w-full py-3 bg-tertiary text-white rounded-xl font-black bouncy-hover flex items-center justify-center gap-2"
-                @click="$router.push('/challengeprep')"
-              >
-                去挑战 ⚔️
-              </button>
-            </div>
-            <!-- Task Card 2 -->
-            <div
-              class="bg-surface-container-lowest p-6 rounded-lg shadow-sm border border-outline-variant/10 group hover:shadow-xl transition-all duration-300"
-            >
-              <div class="flex justify-between items-start mb-4">
-                <div
-                  class="w-12 h-12 bg-secondary-container rounded-2xl flex items-center justify-center text-secondary"
-                >
-                  <span class="material-symbols-outlined text-3xl" data-icon="language"
-                    >language</span
-                  >
-                </div>
-                <span
-                  class="bg-surface-container-high text-on-surface-variant text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-tighter"
-                  >8/10 已完成</span
-                >
-              </div>
-              <h4 class="text-lg font-bold mb-1">英语词汇</h4>
-              <p class="text-sm text-on-surface-variant mb-6">第 8 单元：大自然</p>
-              <div class="space-y-2 mb-6">
-                <div class="flex justify-between text-xs font-bold text-on-surface-variant">
-                  <span>进度</span>
-                  <span>8/10 已完成</span>
+                  <span>升级进度</span>
+                  <span>{{ progressPercent }}%</span>
                 </div>
                 <div class="h-3 w-full bg-surface-container-high rounded-full overflow-hidden">
                   <div
-                    class="h-full bg-gradient-to-r from-secondary-fixed-dim to-secondary w-[80%] rounded-full"
+                    class="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-1000"
+                    :style="{ width: progressPercent + '%' }"
                   ></div>
                 </div>
               </div>
-              <button
-                class="w-full py-3 bg-surface-container-highest text-on-surface-variant rounded-xl font-black hover:bg-secondary-container hover:text-on-secondary-container transition-colors flex items-center justify-center gap-2"
-                @click="$router.push('/challengeprep')"
-              >
-                继续学习
-              </button>
+              <p class="text-xs text-on-surface-variant italic">
+                {{ levelHint }}
+              </p>
             </div>
           </div>
         </section>
@@ -136,9 +96,8 @@
             </div>
             <h3 class="text-xl font-headline font-bold text-on-surface">我的战力值</h3>
           </div>
-          <!-- Radar/Donut Chart Mockup -->
+          <!-- Radar/Donut Chart -->
           <div class="relative w-full aspect-square flex items-center justify-center mb-8">
-            <!-- Simulated Radar Chart with Circles -->
             <div class="absolute inset-0 flex items-center justify-center">
               <div
                 class="absolute w-[80%] h-[80%] border-[10px] border-surface-container rounded-full opacity-50"
@@ -150,50 +109,35 @@
                 class="absolute w-[40%] h-[40%] border-[10px] border-surface-container rounded-full opacity-50"
               ></div>
             </div>
-            <!-- Subject Mastery Dots/Visual -->
             <div class="relative z-10 w-full h-full">
               <svg class="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
                 <circle
-                  cx="50"
-                  cy="50"
-                  fill="none"
-                  r="40"
-                  stroke="#e3e3dd"
-                  stroke-width="8"
+                  cx="50" cy="50" fill="none" r="40"
+                  stroke="#e3e3dd" stroke-width="8"
                 ></circle>
                 <circle
-                  cx="50"
-                  cy="50"
-                  fill="none"
-                  r="40"
+                  cx="50" cy="50" fill="none" r="40"
                   stroke="#40cef3"
-                  stroke-dasharray="180 251"
-                  stroke-linecap="round"
-                  stroke-width="8"
+                  :stroke-dasharray="circleDash(40, breakdown.level_contribution)"
+                  stroke-linecap="round" stroke-width="8"
                 ></circle>
                 <circle
-                  cx="50"
-                  cy="50"
-                  fill="none"
-                  r="30"
+                  cx="50" cy="50" fill="none" r="30"
                   stroke="#8bfe32"
-                  stroke-dasharray="140 188"
-                  stroke-linecap="round"
-                  stroke-width="8"
+                  :stroke-dasharray="circleDash(30, breakdown.accuracy_contribution)"
+                  stroke-linecap="round" stroke-width="8"
                 ></circle>
                 <circle
-                  cx="50"
-                  cy="50"
-                  fill="none"
-                  r="20"
+                  cx="50" cy="50" fill="none" r="20"
                   stroke="#fe9d00"
-                  stroke-dasharray="80 125"
-                  stroke-linecap="round"
-                  stroke-width="8"
+                  :stroke-dasharray="circleDash(20, breakdown.homework_contribution)"
+                  stroke-linecap="round" stroke-width="8"
                 ></circle>
               </svg>
               <div class="absolute inset-0 flex flex-col items-center justify-center">
-                <span class="text-4xl font-black font-headline text-on-surface">2,840</span>
+                <span class="text-4xl font-black font-headline text-on-surface">
+                  {{ formatCombatPower(stats.combat_power) }}
+                </span>
                 <span class="text-xs font-bold text-on-surface-variant tracking-widest uppercase"
                   >总战力</span
                 >
@@ -205,23 +149,61 @@
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div class="w-3 h-3 rounded-full bg-primary"></div>
-                <span class="text-sm font-semibold">数学</span>
+                <span class="text-sm font-semibold">等级</span>
               </div>
-              <span class="text-sm font-black text-on-surface">85%</span>
+              <span class="text-sm font-black text-on-surface">
+                {{ breakdown.level_contribution }}
+              </span>
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="w-3 h-3 rounded-full bg-secondary"></div>
-                <span class="text-sm font-semibold">英语</span>
+                <div class="w-3 h-3 rounded-full bg-[#8bfe32]"></div>
+                <span class="text-sm font-semibold">准确率</span>
               </div>
-              <span class="text-sm font-black text-on-surface">72%</span>
+              <span class="text-sm font-black text-on-surface">
+                {{ breakdown.accuracy_contribution }}
+              </span>
             </div>
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="w-3 h-3 rounded-full bg-tertiary"></div>
-                <span class="text-sm font-semibold">科学</span>
+                <div class="w-3 h-3 rounded-full bg-[#fe9d00]"></div>
+                <span class="text-sm font-semibold">作业</span>
               </div>
-              <span class="text-sm font-black text-on-surface">60%</span>
+              <span class="text-sm font-black text-on-surface">
+                {{ breakdown.homework_contribution }}
+              </span>
+            </div>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="w-3 h-3 rounded-full bg-[#40cef3]"></div>
+                <span class="text-sm font-semibold">连续</span>
+              </div>
+              <span class="text-sm font-black text-on-surface">
+                {{ breakdown.streak_contribution }}
+              </span>
+            </div>
+          </div>
+          <!-- Subject Performance -->
+          <div class="mt-6 pt-4 border-t border-outline-variant/20" v-if="stats.subject_performance && stats.subject_performance.length">
+            <h4 class="text-sm font-bold text-on-surface-variant mb-3">学科表现</h4>
+            <div
+              v-for="sub in stats.subject_performance"
+              :key="sub.subject"
+              class="flex items-center justify-between py-1"
+            >
+              <span class="text-xs font-semibold">{{ sub.subject }}</span>
+              <div class="flex items-center gap-2">
+                <div class="h-2 w-24 bg-surface-container-high rounded-full overflow-hidden">
+                  <div
+                    class="h-full rounded-full"
+                    :class="scoreColor(sub.avg_score)"
+                    :style="{ width: sub.avg_score + '%' }"
+                  ></div>
+                </div>
+                <span class="text-xs font-black" :class="scoreTextColor(sub.avg_score)">
+                  {{ sub.avg_score }}%
+                </span>
+              </div>
             </div>
           </div>
         </section>
@@ -237,65 +219,136 @@
               style="font-variation-settings: 'FILL' 1"
               >trophy</span
             >
-            班级排名
+            战力成就
           </h4>
-          <div class="space-y-4">
-            <div
-              class="flex items-center gap-4 p-2 rounded-xl bg-surface-container-low border border-primary/20"
-            >
-              <span class="font-black text-primary w-4">1</span>
-              <img
-                alt="User"
-                class="w-8 h-8 rounded-full bg-white"
-                data-alt="Avatar of the user"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1b12XzWOGDLsFDE3VnFbCv4LxAvoxE7VKPdDhEI4I429NGDHk48yqdxhxQKLXha3Zt_F5RzTszuVT5gFkTd3AdtuKC4X-qQwydjI6NoHtG3cxhQK4RD1LObYmnOhIu91K8LfFfxK4hNmKiYcqvqXLWZQ1rIpXG3dvFCHi4liyUd0t_h1D4KIo4EpjjXL2VaMcWfWMLUph-7cu6d8whXyzMInXzV_SbNOjI54d7rzLnad_5HfL2bSWmLjcT2x2Zy4fqqIjhtqXsnAS"
-              />
-              <span class="font-bold text-sm flex-1">{{ displayName }}</span>
-              <span class="text-xs font-black text-primary">8.4k</span>
+          <div class="space-y-3 text-center">
+            <div class="text-5xl font-black font-headline text-primary">
+              {{ formatCombatPower(stats.combat_power) }}
             </div>
-            <div class="flex items-center gap-4 p-2 rounded-xl">
-              <span class="font-black text-on-surface-variant w-4">2</span>
-              <img
-                alt="User"
-                class="w-8 h-8 rounded-full bg-surface-container"
-                data-alt="Avatar of a classmate"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB10S85iwtZY3oAXY5QD-pWtFxah7TvmxIRWTjwxpGZRhATIXZ-0LtjnO1vzYmCFC7GkBDnEnzXSO2W0L35UIuphsRS3_8AkhphrXRItfR60qNKDBORMEuwzFHj0wXyXX2EizKKeNEspEboGrGjow4KLB-0_W88ULgNcdapviRrwhJWl5SMlEE70SlpWqHAW0LXWC7sg47whMCAB2QPuTw6Z7JGhA0sFnogPlIZilkMmv-IAm26RxMlca1bnMxHyEeQPVyIi_7V0IeJ"
-              />
-              <span class="font-bold text-sm flex-1">Zhang Wei</span>
-              <span class="text-xs font-bold text-on-surface-variant">8.2k</span>
-            </div>
-            <div class="flex items-center gap-4 p-2 rounded-xl">
-              <span class="font-black text-on-surface-variant w-4">3</span>
-              <img
-                alt="User"
-                class="w-8 h-8 rounded-full bg-surface-container"
-                data-alt="Avatar of a classmate"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMaYq9zpp5UQjxV7LlArmUkLlnFzybXNle5b7E7uyw-yagHpVtIWfmCuF9b7ibf53JC1hTtJcxIgHf-b2i4-Rkmgkxr5o2aZrFoOnHprCm5m-v7jbSqTNv6ZgnVG5co2aCemW7URTrYotdk662y-eyVdXj-8hSn7jb8eamT-g0-Ec57ibsYJsP0jfKUW8nAA7I4_vDV79BwPUX8IILxByHpYFOw-zhUnI74WOebTSJOqcaTvh7sy0jOnRVMTBCXrLCXoqXREypPf7m"
-              />
-              <span class="font-bold text-sm flex-1">Li Hua</span>
-              <span class="text-xs font-bold text-on-surface-variant">7.9k</span>
+            <p class="text-sm text-on-surface-variant">
+              Lv.{{ stats.level || '?' }} ・ 完成 {{ stats.homework_done || 0 }} 份作业 ・ 连续 {{ stats.streak_days || 0 }} 天
+            </p>
+            <div class="flex justify-center gap-4 text-xs font-bold text-on-surface-variant">
+              <span>准确率 {{ Number(stats.accuracy || 0).toFixed(1) }}%</span>
+              <span>积分 {{ stats.points || 0 }}</span>
             </div>
           </div>
         </section>
       </div>
     </div>
   </main>
-  <!-- Floating Action Button (Optional for dashboard context) -->
-  <button
-    class="fixed bottom-8 right-8 w-16 h-16 bg-tertiary text-white rounded-full shadow-2xl flex items-center justify-center bouncy-hover z-50"
-  >
-    <span class="material-symbols-outlined text-3xl" data-icon="edit_note">edit_note</span>
-  </button>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
 import StudentSidebar from '@/components/layout/StudentSidebar.vue'
 import { getStoredUser } from '@/services/userService.js'
+import { getMyStats } from '@/services/questionService.js'
 
 const user = ref(getStoredUser())
 const displayName = computed(() => user.value?.name || '未登录用户')
+
+// 实时统计数据
+const stats = ref({
+  points: 0,
+  level: 1,
+  combat_power: 0,
+  next_level_points: 100,
+  points_to_next_level: 100,
+  progress_in_level: 0,
+  level_range: 100,
+  streak_days: 0,
+  homework_done: 0,
+  accuracy: 0,
+  combat_breakdown: { level_contribution: 0, accuracy_contribution: 0, homework_contribution: 0, streak_contribution: 0 },
+  subject_performance: [],
+})
+
+const breakdown = computed(() => stats.value.combat_breakdown || {})
+
+const maxCombatContribution = computed(() => {
+  const b = breakdown.value
+  const vals = [b.level_contribution || 0, b.accuracy_contribution || 0, b.homework_contribution || 0, b.streak_contribution || 0]
+  return Math.max(...vals, 1)
+})
+
+// SVG arc helper — maps a contribution value to a dasharray
+function circleDash(radius, value) {
+  const circumference = 2 * Math.PI * radius
+  const ratio = maxCombatContribution.value > 0 ? (value || 0) / maxCombatContribution.value : 0
+  const filled = circumference * Math.min(ratio, 1)
+  return `${filled} ${circumference * 3}`
+}
+
+const greeting = computed(() => {
+  const hour = new Date().getHours()
+  if (hour < 6) return '夜深了'
+  if (hour < 12) return '早上好'
+  if (hour < 14) return '中午好'
+  if (hour < 18) return '下午好'
+  return '晚上好'
+})
+
+const streakDisplay = computed(() => {
+  const days = stats.value.streak_days || 0
+  if (days <= 0) return '今天开始学习吧！'
+  return `连续学习 ${days} 天`
+})
+
+const progressPercent = computed(() => {
+  const range = stats.value.level_range || 100
+  if (range <= 0) return 0
+  return Math.min(100, Math.round(((stats.value.progress_in_level || 0) / range) * 100))
+})
+
+const progressHint = computed(() => {
+  const needed = stats.value.points_to_next_level
+  if (needed <= 0) return '已达最高等级！继续努力保持！'
+  return `表现不错！再获得 ${needed} 经验值即可升级！`
+})
+
+const levelHint = computed(() => {
+  const p = stats.value.points_to_next_level
+  if (p <= 0) return '当前等级已满级！'
+  return `还差 ${p} 分升到 Lv.${(stats.value.level || 1) + 1}`
+})
+
+function formatCombatPower(val) {
+  if (!val) return '0'
+  if (val >= 10000) return (val / 1000).toFixed(1) + 'k'
+  return val.toLocaleString()
+}
+
+function scoreColor(score) {
+  if (score >= 80) return 'bg-primary'
+  if (score >= 60) return 'bg-secondary'
+  return 'bg-tertiary'
+}
+
+function scoreTextColor(score) {
+  if (score >= 80) return 'text-primary'
+  if (score >= 60) return 'text-secondary'
+  return 'text-tertiary'
+}
+
+onMounted(async () => {
+  try {
+    const data = await getMyStats()
+    if (data) stats.value = data
+  } catch (e) {
+    console.error('Failed to load student stats:', e)
+  }
+})
 </script>
 
-<style scoped></style>
+<style scoped>
+/* Breathing glow animation — matching existing style */
+@keyframes breathing-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 180, 216, 0.1); }
+  50% { box-shadow: 0 0 20px 4px rgba(0, 180, 216, 0.15); }
+}
+.breathing-glow {
+  animation: breathing-glow 3s ease-in-out infinite;
+}
+</style>

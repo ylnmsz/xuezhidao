@@ -3,6 +3,14 @@
     <StudentSidebar />
     <StudentTopNavbar />
 
+    <input
+      ref="fileInputRef"
+      type="file"
+      class="hidden"
+      accept="image/*,.pdf"
+      @change="handleFileSelected"
+    />
+
     <main class="flex-1 p-4 md:p-10 space-y-8 pt-24 md:pt-28 lg:ml-72">
       <header class="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -16,6 +24,7 @@
         <div class="flex items-center gap-3">
           <button
             class="bouncy-hover flex items-center gap-2 bg-surface-container-lowest px-6 py-3 rounded-full text-on-surface font-semibold shadow-sm border border-outline-variant/10"
+            @click="showHistory"
           >
             <span class="material-symbols-outlined" data-icon="history">history</span>
             <span>生成历史</span>
@@ -29,6 +38,7 @@
         >
           <div class="absolute inset-0 cloud-pattern opacity-40"></div>
           <div
+            @click="triggerFileUpload"
             class="relative z-10 border-4 border-dashed border-primary-container/40 rounded-lg p-12 flex flex-col items-center justify-center text-center cursor-pointer hover:border-primary-container transition-all group-hover:bg-primary-container/5"
           >
             <div
@@ -60,24 +70,30 @@
               >
               识别预览区
             </h4>
-            <span class="text-xs font-bold bg-secondary/10 text-secondary px-2 py-1 rounded"
-              >等待上传</span
-            >
+            <span class="text-xs font-bold px-2 py-1 rounded"
+              :class="uploadedFile ? 'bg-secondary/10 text-secondary' : 'bg-secondary/10 text-secondary'"
+            >{{ uploadedFile ? '已上传' : '等待上传' }}</span>
           </div>
           <div
             class="flex-1 bg-surface-container-highest rounded-lg border-2 border-outline-variant/20 flex flex-col items-center justify-center gap-4 relative overflow-hidden"
           >
-            <div class="opacity-20 flex flex-col items-center">
-              <span class="material-symbols-outlined text-6xl" data-icon="image">image</span>
-              <p class="mt-2 font-medium">暂无预览内容</p>
-            </div>
-            <div
-              class="absolute w-full h-full pointer-events-none flex items-center justify-center"
-            >
+            <template v-if="previewUrl">
+              <img :src="previewUrl" class="w-full h-full object-contain rounded-lg" alt="Preview" />
+              <span class="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full">{{ uploadedFileName }}</span>
+            </template>
+            <template v-else>
+              <div class="opacity-20 flex flex-col items-center">
+                <span class="material-symbols-outlined text-6xl" data-icon="image">image</span>
+                <p class="mt-2 font-medium">暂无预览内容</p>
+              </div>
               <div
-                class="absolute w-32 h-32 border-2 border-primary/10 rounded-full animate-ping"
-              ></div>
-            </div>
+                class="absolute w-full h-full pointer-events-none flex items-center justify-center"
+              >
+                <div
+                  class="absolute w-32 h-32 border-2 border-primary/10 rounded-full animate-ping"
+                ></div>
+              </div>
+            </template>
           </div>
         </div>
       </section>
@@ -89,21 +105,25 @@
           <div class="flex items-center gap-2">
             <button
               class="px-5 py-2 rounded-full bg-primary-container text-on-primary-container font-bold text-sm transition-all"
+              @click="filterType = 'all'"
             >
               全部题型
             </button>
             <button
               class="px-5 py-2 rounded-full hover:bg-surface-container text-on-surface-variant font-bold text-sm transition-all"
+              @click="filterType = 'single'"
             >
               单选题
             </button>
             <button
               class="px-5 py-2 rounded-full hover:bg-surface-container text-on-surface-variant font-bold text-sm transition-all"
+              @click="filterType = 'multi'"
             >
               多选题
             </button>
             <button
               class="px-5 py-2 rounded-full hover:bg-surface-container text-on-surface-variant font-bold text-sm transition-all"
+              @click="filterType = 'fill'"
             >
               填空题
             </button>
@@ -136,6 +156,7 @@
             </div>
             <button
               class="bg-secondary-container text-on-secondary-container font-bold px-6 py-2 rounded-full bouncy-hover flex items-center gap-2"
+              @click="regenerateQuestions"
             >
               <span class="material-symbols-outlined" data-icon="auto_fix_high">auto_fix_high</span>
               重新生成
@@ -169,7 +190,7 @@
                   <span class="material-symbols-outlined" data-icon="star">star</span>
                 </div>
               </div>
-              <button class="text-on-surface-variant hover:text-error transition-colors">
+              <button class="text-on-surface-variant hover:text-error transition-colors" @click="deleteCard(0)">
                 <span class="material-symbols-outlined" data-icon="delete">delete</span>
               </button>
             </div>
@@ -218,6 +239,7 @@
             </div>
             <button
               class="w-full py-2 border-2 border-dashed border-outline-variant rounded-lg text-sm font-bold text-on-surface-variant hover:bg-surface-container transition-colors"
+              @click="editQuestion(0)"
             >
               编辑题目详情
             </button>
@@ -259,7 +281,7 @@
                   >
                 </div>
               </div>
-              <button class="text-on-surface-variant hover:text-error transition-colors">
+              <button class="text-on-surface-variant hover:text-error transition-colors" @click="deleteCard(1)">
                 <span class="material-symbols-outlined" data-icon="delete">delete</span>
               </button>
             </div>
@@ -275,6 +297,7 @@
             </div>
             <button
               class="w-full py-2 border-2 border-dashed border-outline-variant rounded-lg text-sm font-bold text-on-surface-variant hover:bg-surface-container transition-colors"
+              @click="editQuestion(1)"
             >
               编辑题目详情
             </button>
@@ -284,6 +307,7 @@
         <div class="mt-12 flex justify-center pb-12">
           <button
             class="group relative px-12 py-5 bg-primary text-on-primary rounded-full font-headline font-extrabold text-xl shadow-[0_20px_50px_rgba(0,100,121,0.3)] bouncy-hover flex items-center gap-4 overflow-hidden"
+            @click="addToQuestionBank"
           >
             <div
               class="absolute inset-0 bg-gradient-to-r from-primary to-primary-container opacity-0 group-hover:opacity-100 transition-opacity"
@@ -310,8 +334,59 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
 import StudentSidebar from '@/components/layout/StudentSidebar.vue'
+
+const filterType = ref('all')
+const fileInputRef = ref(null)
+const previewUrl = ref('')
+const uploadedFile = ref(null)
+const uploadedFileName = ref('')
+
+function triggerFileUpload() {
+  fileInputRef.value?.click()
+}
+
+function handleFileSelected(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  uploadedFile.value = file
+  uploadedFileName.value = file.name
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    previewUrl.value = e.target?.result || ''
+  }
+  reader.readAsDataURL(file)
+}
+
+function showHistory() {
+  alert('功能开发中 — 生成历史功能即将上线')
+}
+
+function regenerateQuestions() {
+  if (!uploadedFile.value) {
+    alert('请先上传教材图片或笔记')
+    return
+  }
+  alert('功能开发中 — AI 将重新生成题目')
+}
+
+function deleteCard(index) {
+  alert('功能开发中 — 删除功能即将上线')
+}
+
+function editQuestion(index) {
+  alert('功能开发中 — 题目编辑功能即将上线')
+}
+
+function addToQuestionBank() {
+  if (!uploadedFile.value) {
+    alert('请先上传教材图片，AI 生成题目后方可加入题库')
+    return
+  }
+  alert('功能开发中 — 一键加入题库功能即将上线')
+}
 </script>
 
 <style scoped>

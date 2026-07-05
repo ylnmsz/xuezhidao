@@ -2,9 +2,8 @@
   <div class="space-y-10">
     <p
       class="font-headline text-2xl md:text-3xl font-extrabold text-on-surface leading-tight text-center"
-    >
-      {{ question }}
-    </p>
+      v-html="renderedQuestion"
+    ></p>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <button
@@ -67,7 +66,10 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { renderMathToHtml } from '../../utils/renderMath.js'
+
+const props = defineProps({
   question: {
     type: String,
     default: '',
@@ -79,4 +81,6 @@ defineProps({
 })
 
 defineEmits(['update:modelValue'])
+
+const renderedQuestion = computed(() => renderMathToHtml(props.question))
 </script>

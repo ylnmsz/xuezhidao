@@ -6,6 +6,7 @@ import ClassManagement from '../views/ClassManagement.vue'
 import ForgotPassword from '../views/ForgotPassword.vue'
 import HomeworkManagement from '../views/HomeworkManagement.vue'
 import ImmersivePractice from '../views/ImmersivePractice.vue'
+import PracticeSession from '../views/PracticeSession.vue'
 import LoginRegistrationUpdatedOwl from '../views/LoginRegistrationUpdatedOwl.vue'
 import Messages from '../views/Messages.vue'
 import QuestionBank from '../views/QuestionBank.vue'
@@ -13,11 +14,13 @@ import RegistrationUpdatedImage from '../views/RegistrationUpdatedImage.vue'
 import StudentAnalytics from '../views/StudentAnalytics.vue'
 import StudentDashboard from '../views/StudentDashboard.vue'
 import StudentErrorBook from '../views/StudentErrorBook.vue'
+import StudentClasses from '../views/StudentClasses.vue'
 import StudentHomeworkList from '../views/StudentHomeworkList.vue'
 import StudentProfile from '../views/StudentProfile.vue'
 import StudentRankings from '../views/StudentRankings.vue'
 import TeacherRankings from '../views/TeacherRankings.vue'
 import TeacherDashboard from '../views/TeacherDashboard.vue'
+import TeacherGrading from '../views/TeacherGrading.vue'
 import TeacherProfile from '../views/TeacherProfile.vue'
 import AiAiAssistant from '../views/AiAiAssistant.vue'
 import { getStoredUser } from '../services/userService.js'
@@ -64,6 +67,12 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'student' },
     },
     {
+      path: '/practice-session',
+      name: 'PracticeSession',
+      component: PracticeSession,
+      meta: { requiresAuth: true, role: 'student' },
+    },
+    {
       path: '/loginregistrationupdatedowl',
       name: 'LoginRegistrationUpdatedOwl',
       component: LoginRegistrationUpdatedOwl,
@@ -98,6 +107,12 @@ const router = createRouter({
       meta: { requiresAuth: true, role: 'student' },
     },
     {
+      path: '/studentclasses',
+      name: 'StudentClasses',
+      component: StudentClasses,
+      meta: { requiresAuth: true, role: 'student' },
+    },
+    {
       path: '/studenterrorbook',
       name: 'StudentErrorBook',
       component: StudentErrorBook,
@@ -125,6 +140,12 @@ const router = createRouter({
       path: '/teacherdashboard',
       name: 'TeacherDashboard',
       component: TeacherDashboard,
+      meta: { requiresAuth: true, role: 'teacher' },
+    },
+    {
+      path: '/teachergrading',
+      name: 'TeacherGrading',
+      component: TeacherGrading,
       meta: { requiresAuth: true, role: 'teacher' },
     },
     {

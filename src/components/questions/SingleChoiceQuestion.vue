@@ -1,20 +1,23 @@
 <template>
   <div class="space-y-6">
     <div class="space-y-4">
-      <p class="text-xl md:text-2xl font-headline font-bold text-on-surface leading-snug">
-        {{ question }}
-      </p>
+      <p
+        class="text-xl md:text-2xl font-headline font-bold text-on-surface leading-snug"
+        v-html="renderedQuestion"
+      ></p>
       <div v-if="imageUrl" class="w-full h-64 rounded-lg overflow-hidden bg-surface-container-low">
         <img :src="imageUrl" alt="question" class="w-full h-full object-cover" />
       </div>
-      <p v-if="description" class="text-on-surface-variant leading-relaxed">
-        {{ description }}
-      </p>
+      <p
+        v-if="description"
+        class="text-on-surface-variant leading-relaxed"
+        v-html="renderedDesc"
+      ></p>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <button
-        v-for="option in options"
+        v-for="option in renderedOptions"
         :key="option.id"
         class="group flex items-center gap-4 p-5 rounded-lg border-2 transition-all text-left"
         :class="
@@ -35,14 +38,17 @@
         >
           {{ option.label }}
         </span>
-        <span class="font-body font-medium text-on-surface">{{ option.text }}</span>
+        <span class="font-body font-medium text-on-surface" v-html="option.rendered"></span>
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+import { renderMathToHtml } from '../../utils/renderMath.js'
+
+const props = defineProps({
   question: {
     type: String,
     default: '',
@@ -66,4 +72,13 @@ defineProps({
 })
 
 defineEmits(['update:modelValue'])
+
+const renderedQuestion = computed(() => renderMathToHtml(props.question))
+const renderedDesc = computed(() => renderMathToHtml(props.description))
+const renderedOptions = computed(() =>
+  (props.options || []).map((option) => ({
+    ...option,
+    rendered: renderMathToHtml(option.text),
+  })),
+)
 </script>

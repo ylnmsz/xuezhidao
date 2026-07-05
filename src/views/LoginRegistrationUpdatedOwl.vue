@@ -78,35 +78,6 @@
             <p class="text-2xl font-bold font-headline text-on-surface mt-2">欢迎来到学之道！ 🌍</p>
             <p class="text-on-surface-variant mt-2">求学之路，始于足下。</p>
           </div>
-          <!-- Tabs Selection -->
-          <div class="grid grid-cols-2 gap-4">
-            <button
-              class="flex flex-col items-center justify-center p-6 rounded-lg bouncy-hover shadow-[0_10px_30px_rgba(0,100,121,0.1)] group transition-all"
-              :class="
-                role === 'student'
-                  ? 'bg-surface-container-lowest border-4 border-primary'
-                  : 'bg-surface-container-low border-4 border-transparent opacity-70 hover:opacity-100'
-              "
-              type="button"
-              @click="role = 'student'"
-            >
-              <span class="text-4xl mb-2 group-hover:scale-125 transition-transform">👨‍🎓</span>
-              <span class="font-headline font-bold text-primary">我是学生</span>
-            </button>
-            <button
-              class="flex flex-col items-center justify-center p-6 rounded-lg bouncy-hover transition-all group"
-              :class="
-                role === 'teacher'
-                  ? 'bg-surface-container-lowest border-4 border-secondary-container'
-                  : 'bg-surface-container-low border-4 border-transparent opacity-70 hover:opacity-100'
-              "
-              type="button"
-              @click="role = 'teacher'"
-            >
-              <span class="text-4xl mb-2 group-hover:scale-125 transition-transform">👩‍🏫</span>
-              <span class="font-headline font-bold text-on-surface-variant">我是老师</span>
-            </button>
-          </div>
           <!-- Form Fields -->
           <form class="space-y-6" @submit.prevent="handleLogin">
             <div class="space-y-2">
@@ -232,7 +203,6 @@ import { login } from '@/services/authService.js'
 const router = useRouter()
 const email = ref('')
 const password = ref('')
-const role = ref('student')
 const errorMessage = ref('')
 const isSubmitting = ref(false)
 

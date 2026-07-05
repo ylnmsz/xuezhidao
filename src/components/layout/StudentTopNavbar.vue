@@ -16,14 +16,14 @@
             >military_tech</span
           >
           <div class="w-32 h-3 bg-surface-container rounded-full overflow-hidden">
-            <div class="h-full bg-primary w-[65%] rounded-full"></div>
+            <div class="h-full bg-primary rounded-full transition-all duration-1000" :style="{ width: progressPercent + '%' }"></div>
           </div>
-          <span class="text-xs font-bold text-primary">LV.12</span>
+          <span class="text-xs font-bold text-primary">LV.{{ level }}</span>
         </div>
         <!-- Coins Bar -->
         <div class="flex items-center bg-surface-container-highest rounded-full px-3 py-1 gap-2">
           <span class="material-symbols-outlined text-tertiary" data-icon="payments">payments</span>
-          <span class="text-sm font-bold text-on-surface">2,450</span>
+          <span class="text-sm font-bold text-on-surface">{{ formattedPoints }}</span>
         </div>
       </div>
     </div>
@@ -59,6 +59,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { API_BASE } from '@/services/api.js'
 import { getMe, getStoredUser, saveUser } from '@/services/userService.js'
+import { getMyStats } from '@/services/questionService.js'
 
 defineProps({
   profileRoute: {
@@ -68,6 +69,7 @@ defineProps({
 })
 
 const user = ref(getStoredUser())
+const stats = ref(null)
 
 const displayName = computed(() => user.value?.name || '未登录用户')
 const displayRole = computed(() => (user.value?.role === 'teacher' ? '教师' : '学生'))
@@ -86,6 +88,19 @@ const resolveAvatarUrl = (url) => {
 
 const displayAvatar = computed(() => resolveAvatarUrl(user.value?.avatar_url) || fallbackAvatar)
 
+const level = computed(() => stats.value?.level || user.value?.level || 1)
+const points = computed(() => stats.value?.points || user.value?.points || 0)
+const progressPercent = computed(() => {
+  const range = stats.value?.level_range || 100
+  if (range <= 0) return 0
+  return Math.min(100, Math.round(((stats.value?.progress_in_level || 0) / range) * 100))
+})
+const formattedPoints = computed(() => {
+  const v = points.value
+  if (v >= 10000) return (v / 1000).toFixed(1) + 'k'
+  return v.toLocaleString()
+})
+
 const handleUserUpdated = (event) => {
   if (event?.detail) {
     user.value = event.detail
@@ -100,6 +115,12 @@ onMounted(async () => {
     saveUser(data)
   } catch {
     // Keep local cached user when API fails.
+  }
+  // Also fetch stats for level/points/progress
+  try {
+    stats.value = await getMyStats()
+  } catch {
+    // stats will fall back to user data
   }
 })
 

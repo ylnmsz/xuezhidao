@@ -1,119 +1,142 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="">
   <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vite App</title>
-  
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>xuezhidao</title>
 
-
-
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "inverse-on-surface": "#9d9d99",
-                        "on-surface": "#2e2f2c",
-                        "surface-variant": "#ddddd7",
-                        "background": "#f7f6f1",
-                        "tertiary-fixed-dim": "#eb9100",
-                        "secondary-fixed-dim": "#7def20",
-                        "surface-container-high": "#e3e3dd",
-                        "secondary-container": "#8bfe32",
-                        "surface-dim": "#d4d5ce",
-                        "inverse-primary": "#40cef3",
-                        "error-container": "#fb5151",
-                        "on-primary-fixed": "#002a34",
-                        "primary-dim": "#00576a",
-                        "on-secondary-fixed-variant": "#316800",
-                        "on-primary-fixed-variant": "#004a5a",
-                        "tertiary": "#844f00",
-                        "primary": "#006479",
-                        "on-secondary-container": "#2b5d00",
-                        "primary-fixed": "#40cef3",
-                        "on-tertiary": "#fff0e4",
-                        "primary-container": "#40cef3",
-                        "surface-tint": "#006479",
-                        "primary-fixed-dim": "#28c0e4",
-                        "on-tertiary-container": "#4b2b00",
-                        "on-secondary": "#d7ffb5",
-                        "secondary": "#316800",
-                        "surface-container-low": "#f1f1ec",
-                        "tertiary-fixed": "#fe9d00",
-                        "on-tertiary-fixed-variant": "#573300",
-                        "error": "#b31b25",
-                        "on-error": "#ffefee",
-                        "outline-variant": "#adada9",
-                        "error-dim": "#9f0519",
-                        "tertiary-dim": "#734500",
-                        "surface-container-lowest": "#ffffff",
-                        "inverse-surface": "#0d0f0c",
-                        "on-background": "#2e2f2c",
-                        "on-primary-container": "#00414f",
-                        "tertiary-container": "#fe9d00",
-                        "surface-bright": "#f7f6f1",
-                        "on-primary": "#e0f6ff",
-                        "surface": "#f7f6f1",
-                        "on-secondary-fixed": "#204800",
-                        "secondary-dim": "#2a5b00",
-                        "on-surface-variant": "#5b5c58",
-                        "on-tertiary-fixed": "#2b1600",
-                        "outline": "#777773",
-                        "on-error-container": "#570008",
-                        "surface-container-highest": "#ddddd7",
-                        "surface-container": "#e9e8e3",
-                        "secondary-fixed": "#8bfe32"
-                    },
-                    fontFamily: {
-                        "headline": ["Plus Jakarta Sans"],
-                        "body": ["Be Vietnam Pro"],
-                        "label": ["Plus Jakarta Sans"]
-                    },
-                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
-                },
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Be+Vietnam+Pro:wght@400;500;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'inverse-on-surface': '#9d9d99',
+              'on-surface': '#2e2f2c',
+              'surface-variant': '#ddddd7',
+              background: '#f7f6f1',
+              'tertiary-fixed-dim': '#eb9100',
+              'secondary-fixed-dim': '#7def20',
+              'surface-container-high': '#e3e3dd',
+              'secondary-container': '#8bfe32',
+              'surface-dim': '#d4d5ce',
+              'inverse-primary': '#40cef3',
+              'error-container': '#fb5151',
+              'on-primary-fixed': '#002a34',
+              'primary-dim': '#00576a',
+              'on-secondary-fixed-variant': '#316800',
+              'on-primary-fixed-variant': '#004a5a',
+              tertiary: '#844f00',
+              primary: '#006479',
+              'on-secondary-container': '#2b5d00',
+              'primary-fixed': '#40cef3',
+              'on-tertiary': '#fff0e4',
+              'primary-container': '#40cef3',
+              'surface-tint': '#006479',
+              'primary-fixed-dim': '#28c0e4',
+              'on-tertiary-container': '#4b2b00',
+              'on-secondary': '#d7ffb5',
+              secondary: '#316800',
+              'surface-container-low': '#f1f1ec',
+              'tertiary-fixed': '#fe9d00',
+              'on-tertiary-fixed-variant': '#573300',
+              error: '#b31b25',
+              'on-error': '#ffefee',
+              'outline-variant': '#adada9',
+              'error-dim': '#9f0519',
+              'tertiary-dim': '#734500',
+              'surface-container-lowest': '#ffffff',
+              'inverse-surface': '#0d0f0c',
+              'on-background': '#2e2f2c',
+              'on-primary-container': '#00414f',
+              'tertiary-container': '#fe9d00',
+              'surface-bright': '#f7f6f1',
+              'on-primary': '#e0f6ff',
+              surface: '#f7f6f1',
+              'on-secondary-fixed': '#204800',
+              'secondary-dim': '#2a5b00',
+              'on-surface-variant': '#5b5c58',
+              'on-tertiary-fixed': '#2b1600',
+              outline: '#777773',
+              'on-error-container': '#570008',
+              'surface-container-highest': '#ddddd7',
+              'surface-container': '#e9e8e3',
+              'secondary-fixed': '#8bfe32',
             },
-        }
+            fontFamily: {
+              headline: ['Plus Jakarta Sans'],
+              body: ['Be Vietnam Pro'],
+              label: ['Plus Jakarta Sans'],
+            },
+            borderRadius: { DEFAULT: '1rem', lg: '2rem', xl: '3rem', full: '9999px' },
+          },
+        },
+      }
     </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24;
+      }
+      .bouncy-hover:hover {
+        transform: scale(1.05);
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+      .floating-cloud {
+        animation: float 6s ease-in-out infinite;
+      }
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
         }
-        .bouncy-hover:hover {
-            transform: scale(1.05);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        50% {
+          transform: translateY(-20px);
         }
-        .floating-cloud {
-            animation: float 6s ease-in-out infinite;
+      }
+      .jumping-star {
+        animation: jump 2s ease-in-out infinite;
+      }
+      @keyframes jump {
+        0%,
+        100% {
+          transform: translateY(0) scale(1);
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
+        50% {
+          transform: translateY(-10px) scale(1.1);
         }
-        .jumping-star {
-            animation: jump 2s ease-in-out infinite;
+      }
+      .shake-hover:hover {
+        animation: shake 0.5s ease-in-out infinite;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: rotate(0deg);
         }
-        @keyframes jump {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-10px) scale(1.1); }
+        25% {
+          transform: rotate(-1deg);
         }
-        .shake-hover:hover {
-            animation: shake 0.5s ease-in-out infinite;
+        75% {
+          transform: rotate(1deg);
         }
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(-1deg); }
-            75% { transform: rotate(1deg); }
-        }
+      }
     </style>
-
   </head>
   <body>
     <div id="app"></div>

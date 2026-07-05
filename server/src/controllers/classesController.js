@@ -75,14 +75,30 @@ export const updateClass = async (req, res) => {
 
 export const deleteClass = async (req, res) => {
   try {
+    // Use transaction: remove dependent rows (invites, members, assignments) first to avoid FK violation
+    await query('BEGIN')
+    // delete invites referencing this class
+    await query('DELETE FROM class_invites WHERE class_id = $1', [req.params.id])
+    // delete class members
+    await query('DELETE FROM class_members WHERE class_id = $1', [req.params.id])
+    // delete assignments (and their submissions may reference assignments; handle by cascade or app logic)
+    await query('DELETE FROM assignments WHERE class_id = $1', [req.params.id])
+
     const result = await query('DELETE FROM classes WHERE id = $1 RETURNING id', [req.params.id])
     if (result.rowCount === 0) {
+      await query('ROLLBACK')
       return res.status(404).json({ message: 'Class not found.' })
     }
+    await query('COMMIT')
     return res.json({ ok: true })
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error(error)
+    try {
+      await query('ROLLBACK')
+    } catch (e) {
+      // ignore rollback errors
+    }
     return res.status(500).json({ message: 'Server error' })
   }
 }

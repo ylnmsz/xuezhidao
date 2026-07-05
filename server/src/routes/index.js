@@ -9,10 +9,12 @@ import questionRoutes from './questions.js'
 import questionBankRoutes from './questionBanks.js'
 import messageRoutes from './messages.js'
 import notificationRoutes from './notifications.js'
+import classInvitesRoutes from './classInvites.js'
 import rankingRoutes from './rankings.js'
 import errorbookRoutes from './errorbook.js'
 import analyticsRoutes from './analytics.js'
 import uploadRoutes from './uploads.js'
+import practiceRoutes from './practice.js'
 
 const router = Router()
 
@@ -26,9 +28,11 @@ router.use('/questions', questionRoutes)
 router.use('/question-banks', questionBankRoutes)
 router.use('/messages', messageRoutes)
 router.use('/notifications', notificationRoutes)
+router.use('/invites', classInvitesRoutes)
 router.use('/rankings', rankingRoutes)
 router.use('/errorbook', errorbookRoutes)
 router.use('/analytics', analyticsRoutes)
 router.use('/uploads', uploadRoutes)
+router.use('/practice', practiceRoutes)
 
 export default router

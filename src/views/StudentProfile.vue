@@ -135,8 +135,9 @@
                   <label class="text-xs font-bold text-on-surface-variant uppercase ml-2">
                     学习目标
                   </label>
-                  <div class="p-4 bg-surface-container-low rounded-2xl font-medium">
-                    冲刺年级前50
+                  <div class="p-4 bg-surface-container-low rounded-2xl font-medium flex items-center gap-2">
+                    <span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1">stars</span>
+                    {{ studyGoal }}
                   </div>
                 </div>
                 <div class="space-y-2">
@@ -145,7 +146,7 @@
                   </label>
                   <div class="p-4 bg-surface-container-low rounded-2xl flex items-center gap-3">
                     <span class="material-symbols-outlined text-tertiary">alarm</span>
-                    <span class="font-bold">19:30</span>
+                    <span class="font-bold">{{ reminderTime }}</span>
                   </div>
                 </div>
                 <div class="md:col-span-2 space-y-2">
@@ -153,23 +154,17 @@
                     薄弱学科
                   </label>
                   <div class="flex flex-wrap gap-3 p-4 bg-surface-container-low rounded-2xl">
-                    <span
-                      class="bg-error-container text-on-error-container px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-1"
-                    >
-                      English
-                      <span class="material-symbols-outlined text-sm">trending_down</span>
-                    </span>
-                    <span
-                      class="bg-error-container text-on-error-container px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-1"
-                    >
-                      Physics
-                      <span class="material-symbols-outlined text-sm">trending_down</span>
-                    </span>
-                    <button
-                      class="bg-surface-container-highest px-4 py-1.5 rounded-full text-sm font-bold text-on-surface-variant hover:scale-105 transition-transform"
-                    >
-                      + 添加
-                    </button>
+                    <template v-if="weakSubjects.length > 0">
+                      <span
+                        v-for="(subj, si) in weakSubjects"
+                        :key="si"
+                        class="bg-error-container text-on-error-container px-4 py-1.5 rounded-full text-sm font-bold flex items-center gap-1"
+                      >
+                        {{ subj }}
+                        <span class="material-symbols-outlined text-sm">trending_down</span>
+                      </span>
+                    </template>
+                    <span v-else class="text-sm text-on-surface-variant">暂无薄弱学科</span>
                   </div>
                 </div>
               </div>
@@ -192,7 +187,7 @@
                 </button>
               </div>
               <div class="divide-y divide-outline-variant/10">
-                <button class="w-full flex items-center justify-between py-4 group">
+                <button class="w-full flex items-center justify-between py-4 group" @click="openPasswordModal">
                   <span class="font-medium group-hover:text-primary transition-colors"
                     >修改密码</span
                   >
@@ -343,6 +338,58 @@
             </label>
           </div>
 
+          <div class="md:col-span-2 space-y-2">
+            <label class="space-y-2">
+              <span class="px-1 text-sm font-bold text-on-surface-variant">学习目标</span>
+              <input
+                v-model.trim="editForm.study_goal"
+                class="w-full px-5 py-4 bg-surface-container-low border-transparent rounded-lg focus:ring-4 focus:ring-primary-container/50 focus:bg-surface-container-lowest focus:border-primary-container transition-all text-on-surface placeholder:text-outline-variant font-medium"
+                placeholder="例如：冲刺年级前50"
+                type="text"
+              />
+            </label>
+          </div>
+          <div class="md:col-span-2 space-y-2">
+            <label class="space-y-2">
+              <span class="px-1 text-sm font-bold text-on-surface-variant">每日提醒时间</span>
+              <input
+                v-model="editForm.reminder_time"
+                class="w-full px-5 py-4 bg-surface-container-low border-transparent rounded-lg focus:ring-4 focus:ring-primary-container/50 focus:bg-surface-container-lowest focus:border-primary-container transition-all text-on-surface placeholder:text-outline-variant font-medium"
+                placeholder="例如：19:30"
+                type="time"
+              />
+            </label>
+          </div>
+          <div class="md:col-span-2 space-y-2">
+            <label class="px-1 text-sm font-bold text-on-surface-variant">薄弱学科</label>
+            <div class="flex flex-wrap gap-2 p-4 bg-surface-container-low rounded-lg">
+              <span
+                v-for="(subj, si) in editForm.weak_subjects"
+                :key="si"
+                class="bg-error-container text-on-error-container px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1"
+              >
+                {{ subj }}
+                <span
+                  class="material-symbols-outlined text-sm cursor-pointer hover:scale-110"
+                  @click="removeWeakSubject(si)"
+                >close</span>
+              </span>
+              <div class="flex items-center gap-1">
+                <input
+                  v-model="newWeakSubject"
+                  class="w-24 px-2 py-1 bg-transparent border-b border-outline-variant/40 text-sm text-on-surface placeholder:text-outline-variant focus:outline-none focus:border-primary"
+                  placeholder="添加"
+                  type="text"
+                  @keydown.enter.prevent="addWeakSubject"
+                />
+                <button
+                  class="material-symbols-outlined text-sm text-primary hover:scale-110"
+                  @click="addWeakSubject"
+                >add_circle</button>
+              </div>
+            </div>
+          </div>
+
           <label class="space-y-2">
             <span class="px-1 text-sm font-bold text-on-surface-variant">个性签名</span>
             <textarea
@@ -391,6 +438,65 @@
       </div>
     </div>
 
+    <!-- ===== 修改密码弹窗 ===== -->
+    <div
+      v-if="isPasswordOpen"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-inverse-surface/10 backdrop-blur-md px-4"
+    >
+      <div class="w-full max-w-md bg-surface-container-lowest rounded-xl overflow-hidden border border-white/50 shadow-2xl">
+        <div class="flex items-center justify-between px-6 py-5 bg-gradient-to-r from-primary-container/10 to-transparent">
+          <h3 class="text-xl font-headline font-extrabold text-on-surface tracking-tight">修改密码</h3>
+          <button class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant transition-colors" @click="closePasswordModal">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="px-6 py-6 space-y-5">
+          <label class="space-y-1.5">
+            <span class="text-sm font-bold text-on-surface-variant">当前密码</span>
+            <input
+              v-model="passwordForm.currentPassword"
+              class="w-full px-4 py-3 bg-surface-container-low border-transparent rounded-lg focus:ring-4 focus:ring-primary-container/50 focus:bg-surface-container-lowest focus:border-primary-container transition-all text-on-surface placeholder:text-outline-variant font-medium"
+              placeholder="输入当前密码"
+              type="password"
+            />
+          </label>
+          <label class="space-y-1.5">
+            <span class="text-sm font-bold text-on-surface-variant">新密码</span>
+            <input
+              v-model="passwordForm.newPassword"
+              class="w-full px-4 py-3 bg-surface-container-low border-transparent rounded-lg focus:ring-4 focus:ring-primary-container/50 focus:bg-surface-container-lowest focus:border-primary-container transition-all text-on-surface placeholder:text-outline-variant font-medium"
+              placeholder="至少 8 个字符"
+              type="password"
+            />
+          </label>
+          <label class="space-y-1.5">
+            <span class="text-sm font-bold text-on-surface-variant">确认新密码</span>
+            <input
+              v-model="passwordForm.confirmPassword"
+              class="w-full px-4 py-3 bg-surface-container-low border-transparent rounded-lg focus:ring-4 focus:ring-primary-container/50 focus:bg-surface-container-lowest focus:border-primary-container transition-all text-on-surface placeholder:text-outline-variant font-medium"
+              placeholder="再次输入新密码"
+              type="password"
+            />
+          </label>
+          <p v-if="passwordError" class="text-sm text-error font-semibold">{{ passwordError }}</p>
+        </div>
+        <div class="px-6 py-4 bg-surface-container-low flex justify-end gap-3">
+          <button
+            class="px-6 py-3 rounded-full font-headline font-bold text-on-surface-variant bg-surface-container-highest/50 hover:bg-surface-container-highest transition-all"
+            @click="closePasswordModal"
+          >取消</button>
+          <button
+            class="px-8 py-3 rounded-full font-headline font-bold text-on-primary bg-primary shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all disabled:opacity-60"
+            :disabled="isSavingPassword"
+            @click="handleChangePassword"
+          >
+            {{ isSavingPassword ? '修改中...' : '确认修改' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 裁剪头像 ===== -->
     <div
       v-if="isCropOpen"
       class="fixed inset-0 z-[60] flex items-center justify-center bg-inverse-surface/20 backdrop-blur-md px-4"
@@ -440,7 +546,7 @@ import { useRouter } from 'vue-router'
 import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
 import StudentSidebar from '@/components/layout/StudentSidebar.vue'
 import { API_BASE } from '@/services/api.js'
-import { getMe, getStoredUser, saveUser, updateMe, uploadAvatar } from '@/services/userService.js'
+import { getMe, getStoredUser, saveUser, updateMe, uploadAvatar, changePassword } from '@/services/userService.js'
 
 const router = useRouter()
 const user = ref(getStoredUser())
@@ -473,8 +579,19 @@ const displayClass = computed(() => {
 })
 const weeklyStudyHours = computed(() => user.value?.weekly_study_hours ?? 0)
 const homeworkDone = computed(() => user.value?.homework_done ?? 0)
-const accuracy = computed(() => user.value?.accuracy ?? 0)
+const accuracy = computed(() => {
+  const val = user.value?.accuracy ?? 0
+  // accuracy may be 0-1 (from practice) or 0-100 (from submissions)
+  return val > 1 ? Math.round(val) : Math.round(val * 100)
+})
 const streakDays = computed(() => user.value?.streak_days ?? 0)
+const studyGoal = computed(() => user.value?.study_goal || '还没有设定学习目标')
+const reminderTime = computed(() => user.value?.reminder_time || '--:--')
+const weakSubjects = computed(() => {
+  const val = user.value?.weak_subjects
+  if (Array.isArray(val)) return val
+  return []
+})
 
 const isEditOpen = ref(false)
 const isSaving = ref(false)
@@ -492,7 +609,57 @@ const editForm = ref({
   grade: '',
   class_name: '',
   school: '',
+  study_goal: '',
+  reminder_time: '',
+  weak_subjects: [],
 })
+
+const newWeakSubject = ref('')
+
+// ---- 修改密码 ----
+
+const isPasswordOpen = ref(false)
+const passwordForm = ref({ currentPassword: '', newPassword: '', confirmPassword: '' })
+const passwordError = ref('')
+const isSavingPassword = ref(false)
+
+function openPasswordModal() {
+  passwordError.value = ''
+  passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
+  isPasswordOpen.value = true
+}
+
+function closePasswordModal() {
+  if (isSavingPassword.value) return
+  isPasswordOpen.value = false
+}
+
+async function handleChangePassword() {
+  const pf = passwordForm.value
+  if (!pf.currentPassword || !pf.newPassword) {
+    passwordError.value = '请填写所有字段。'
+    return
+  }
+  if (pf.newPassword.length < 8) {
+    passwordError.value = '新密码至少需要 8 个字符。'
+    return
+  }
+  if (pf.newPassword !== pf.confirmPassword) {
+    passwordError.value = '两次输入的新密码不一致。'
+    return
+  }
+  isSavingPassword.value = true
+  passwordError.value = ''
+  try {
+    await changePassword({ currentPassword: pf.currentPassword, newPassword: pf.newPassword })
+    isPasswordOpen.value = false
+    alert('密码修改成功！')
+  } catch (e) {
+    passwordError.value = e.message || '修改密码失败。'
+  } finally {
+    isSavingPassword.value = false
+  }
+}
 
 const triggerAvatarSelect = () => {
   avatarInput.value?.click()
@@ -587,6 +754,7 @@ const confirmCrop = async () => {
 
 const openEditModal = () => {
   editError.value = ''
+  const ws = user.value?.weak_subjects
   editForm.value = {
     name: user.value?.name || '',
     avatar_url: user.value?.avatar_url || '',
@@ -594,8 +762,23 @@ const openEditModal = () => {
     grade: user.value?.grade || '',
     class_name: user.value?.class_name || '',
     school: user.value?.school || '',
+    study_goal: user.value?.study_goal || '',
+    reminder_time: user.value?.reminder_time || '',
+    weak_subjects: Array.isArray(ws) ? [...ws] : [],
   }
   isEditOpen.value = true
+}
+
+function addWeakSubject() {
+  const subj = newWeakSubject.value.trim()
+  if (subj && !editForm.value.weak_subjects.includes(subj)) {
+    editForm.value.weak_subjects.push(subj)
+  }
+  newWeakSubject.value = ''
+}
+
+function removeWeakSubject(idx) {
+  editForm.value.weak_subjects.splice(idx, 1)
 }
 
 const closeEditModal = () => {
@@ -619,6 +802,9 @@ const saveProfile = async () => {
       grade: editForm.value.grade || null,
       class_name: editForm.value.class_name || null,
       school: editForm.value.school || null,
+      study_goal: editForm.value.study_goal || null,
+      reminder_time: editForm.value.reminder_time || null,
+      weak_subjects: editForm.value.weak_subjects,
     }
     const data = await updateMe(payload)
     user.value = data

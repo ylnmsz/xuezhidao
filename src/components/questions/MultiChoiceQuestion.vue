@@ -1,9 +1,10 @@
 <template>
   <div class="space-y-6">
     <div class="space-y-4">
-      <p class="text-xl md:text-2xl font-headline font-bold text-on-surface leading-relaxed">
-        {{ question }}
-      </p>
+      <p
+        class="text-xl md:text-2xl font-headline font-bold text-on-surface leading-relaxed"
+        v-html="renderedQuestion"
+      ></p>
       <p v-if="helper" class="text-on-surface-variant font-medium flex items-center gap-2">
         <span class="material-symbols-outlined text-tertiary" data-icon="info">info</span>
         {{ helper }}
@@ -12,7 +13,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <button
-        v-for="option in options"
+        v-for="option in renderedOptions"
         :key="option.id"
         class="group relative rounded-xl p-5 flex items-center gap-5 cursor-pointer transition-all duration-200 border-2"
         :class="
@@ -34,12 +35,15 @@
           <span class="material-symbols-outlined" data-icon="check_box">check_box</span>
         </div>
         <div class="flex-1">
-          <span class="block text-lg font-bold font-headline text-on-surface">
-            {{ option.text }}
-          </span>
-          <span v-if="option.subText" class="text-sm text-on-surface-variant">
-            {{ option.subText }}
-          </span>
+          <span
+            class="block text-lg font-bold font-headline text-on-surface"
+            v-html="option.rendered"
+          ></span>
+          <span
+            v-if="option.subText"
+            class="text-sm text-on-surface-variant"
+            v-html="option.renderedSub"
+          ></span>
         </div>
       </button>
     </div>
@@ -47,6 +51,9 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { renderMathToHtml } from '../../utils/renderMath.js'
+
 const props = defineProps({
   question: {
     type: String,
@@ -67,6 +74,15 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+
+const renderedQuestion = computed(() => renderMathToHtml(props.question))
+const renderedOptions = computed(() =>
+  (props.options || []).map((option) => ({
+    ...option,
+    rendered: renderMathToHtml(option.text),
+    renderedSub: renderMathToHtml(option.subText || ''),
+  })),
+)
 
 const isSelected = (id) => props.modelValue.includes(id)
 

@@ -16,6 +16,7 @@
         v-for="item in navItems"
         :key="item.to"
         :to="item.to"
+        @click="navigate($event, item.to)"
         :class="[
           'flex items-center gap-4 px-6 py-4 rounded-full transition-all duration-300 font-semibold',
           isActive(item.to)
@@ -25,9 +26,16 @@
       >
         <span class="material-symbols-outlined" :data-icon="item.icon">{{ item.icon }}</span>
         <span>{{ item.label }}</span>
+        <span
+          v-if="item.to === '/messages' && unreadCount > 0"
+          class="ml-auto bg-red-500 text-white text-xs font-bold min-w-[20px] h-5 px-1 rounded-full flex items-center justify-center leading-none"
+        >
+          {{ unreadCount > 99 ? '99+' : unreadCount }}
+        </span>
       </RouterLink>
       <RouterLink
         to="/studentrankings"
+        @click="navigate($event, '/studentrankings')"
         class="flex items-center gap-4 px-6 py-4 text-slate-600 hover:bg-slate-200/50 rounded-full transition-all duration-300 hover:translate-x-2 font-semibold"
       >
         <span class="material-symbols-outlined" data-icon="leaderboard">leaderboard</span>
@@ -38,21 +46,50 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { getMe, getStoredUser, saveUser } from '@/services/userService.js'
+import { getUnreadTotal } from '@/services/questionService.js'
 
 const route = useRoute()
 const user = ref(getStoredUser())
 const navItems = [
   { label: '首页', to: '/studentdashboard', icon: 'home' },
+  { label: '班级管理', to: '/studentclasses', icon: 'group' },
+  { label: '我的作业', to: '/studenthomeworklist', icon: 'assignment' },
   { label: '练习', to: '/immersivepractice', icon: 'auto_stories' },
   { label: '错题本', to: '/studenterrorbook', icon: 'cancel' },
+  { label: '私信', to: '/messages', icon: 'chat' },
 ]
 
 const isActive = (path) => route.path === path
 
+const router = useRouter()
+
+const navigate = (e, to) => {
+  if (e && e.preventDefault) e.preventDefault()
+  router.push(to)
+}
+
 const displayName = computed(() => user.value?.name || '未登录用户')
+
+// ---- 未读消息 ----
+
+const unreadCount = ref(0)
+let pollInterval = null
+
+async function fetchUnreadCount() {
+  try {
+    const data = await getUnreadTotal()
+    unreadCount.value = data.count
+  } catch {
+    // silently ignore
+  }
+}
+
+function handleMessagesRead() {
+  fetchUnreadCount()
+}
 
 onMounted(async () => {
   try {
@@ -62,5 +99,18 @@ onMounted(async () => {
   } catch {
     // Keep local cached user when API fails.
   }
+
+  // Fetch unread count and start polling
+  await fetchUnreadCount()
+  pollInterval = setInterval(fetchUnreadCount, 30000)
+  window.addEventListener('messages-read', handleMessagesRead)
+})
+
+onUnmounted(() => {
+  if (pollInterval) {
+    clearInterval(pollInterval)
+    pollInterval = null
+  }
+  window.removeEventListener('messages-read', handleMessagesRead)
 })
 </script>

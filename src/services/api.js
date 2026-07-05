@@ -14,6 +14,13 @@ export const request = async (path, options = {}) => {
   const data = contentType.includes('application/json') ? await response.json() : null
 
   if (!response.ok) {
+    if (response.status === 401) {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_user')
+      if (window.location.pathname !== '/loginregistrationupdatedowl') {
+        window.location.href = '/loginregistrationupdatedowl'
+      }
+    }
     const message = data?.message || 'Request failed'
     throw new Error(message)
   }
@@ -32,6 +39,13 @@ export const uploadFormData = async (path, formData) => {
   const data = contentType.includes('application/json') ? await response.json() : null
 
   if (!response.ok) {
+    if (response.status === 401) {
+      localStorage.removeItem('auth_token')
+      localStorage.removeItem('auth_user')
+      if (window.location.pathname !== '/loginregistrationupdatedowl') {
+        window.location.href = '/loginregistrationupdatedowl'
+      }
+    }
     const message = data?.message || 'Request failed'
     throw new Error(message)
   }

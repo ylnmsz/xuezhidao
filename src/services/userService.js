@@ -33,3 +33,9 @@ export const uploadAvatar = (file) => {
   formData.append('avatar', file)
   return uploadFormData('/uploads/avatar', formData)
 }
+
+export const changePassword = (payload) =>
+  request('/users/me/change-password', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })

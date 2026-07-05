@@ -1,7 +1,7 @@
 <template>
   <div class="flex min-h-screen">
     <StudentSidebar />
-    <TeacherTopNavbar profile-route="/teacherprofile" />
+    <StudentTopNavbar />
 
     <main class="flex-grow p-6 md:p-10 space-y-10 overflow-y-auto pt-24 md:pt-28 lg:ml-72">
       <header
@@ -10,7 +10,7 @@
         <div class="flex items-center gap-4">
           <button
             class="material-symbols-outlined p-2 hover:bg-surface-container rounded-full transition-colors"
-            @click="$router.push('/classmanagement')"
+            @click="$router.back()"
           >
             arrow_back
           </button>
@@ -56,60 +56,56 @@
           >
             <img
               class="w-full h-full object-cover"
-              data-alt="close up portrait of a cheerful young asian student in casual attire with bright soft sunlight"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBse_jTpUWU9ugHahiL0Q6xcnO7Aco5gYsuxlX9OvlFwkpcEGMQADcDa9YsPopS7WvNEMW56s8OZ2yG7DLmPaaJpRfqzAYb2d0hGbLwHn0fJgLVUReAo9UUwTuH10fxLRa3dz5dB5nSGlGb7wMyGidhR5xU3wtPNDvayazCloIeaMCrGT2_SrrT8t3mNNhBH-BevQTASHE7dkOikmPT3GFKQd7aEvacs4Et2gbhufOqNbXBrTX5DgDNWIIldtJM8TOZLbiiTGDKlatr"
+              :src="displayAvatar || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(displayName) + '&background=0891b2&color=fff&bold=true'"
               alt="Student"
             />
           </div>
           <div
             class="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-secondary text-on-secondary text-xs px-3 py-1 rounded-full font-bold shadow-md"
           >
-            LV.15 先锋
+            LV.{{ displayLevel }} {{ levelTitle(displayLevel) }}
           </div>
         </div>
         <div class="flex-grow space-y-2 text-center md:text-left">
           <div class="flex flex-col md:flex-row md:items-center gap-3">
-            <h2 class="text-3xl font-headline font-extrabold text-on-surface">林悦悦</h2>
+            <h2 class="text-3xl font-headline font-extrabold text-on-surface">{{ displayName }}</h2>
             <span
+              v-if="displayGrade || displayClass"
               class="px-4 py-1 bg-primary-container text-on-primary-container rounded-full text-sm font-semibold"
-              >三年级 A 班</span
+              >{{ displayGrade }} {{ displayClass }}</span
             >
           </div>
-          <p
-            class="text-on-surface-variant flex items-center justify-center md:justify-start gap-2"
-          >
-            <span class="material-symbols-outlined text-sm">schedule</span>
-            最近登录: 今天 09:45
-          </p>
           <div class="flex flex-wrap gap-3 mt-4 justify-center md:justify-start">
             <div
               class="px-4 py-2 bg-surface-container-low rounded-lg text-sm border-l-4 border-tertiary"
             >
               <span class="block text-xs text-outline">总积分</span>
-              <span class="font-bold text-tertiary">1,250</span>
+              <span class="font-bold text-tertiary">{{ displayPoints }}</span>
             </div>
             <div
               class="px-4 py-2 bg-surface-container-low rounded-lg text-sm border-l-4 border-secondary"
             >
               <span class="block text-xs text-outline">完成作业</span>
-              <span class="font-bold text-secondary">42/45</span>
+              <span class="font-bold text-secondary">{{ displayHomeworkDone }}</span>
             </div>
             <div
               class="px-4 py-2 bg-surface-container-low rounded-lg text-sm border-l-4 border-primary"
             >
               <span class="block text-xs text-outline">平均分</span>
-              <span class="font-bold text-primary">92.5</span>
+              <span class="font-bold text-primary">{{ displayAccuracy }}</span>
             </div>
           </div>
         </div>
         <div class="flex flex-col gap-2">
           <button
             class="bg-primary text-white px-8 py-3 rounded-full font-bold hover:scale-105 active:scale-95 transition-all shadow-lg shadow-primary/20"
+            @click="$router.push('/messages')"
           >
             发送评语
           </button>
           <button
             class="bg-surface-container text-on-surface px-8 py-3 rounded-full font-bold hover:bg-surface-container-high transition-all"
+            disabled
           >
             下载报告
           </button>
@@ -209,60 +205,37 @@
             >
             <h3 class="font-headline font-bold text-lg">近期错题分布</h3>
           </div>
-          <div class="space-y-4">
-            <div class="flex items-center gap-4 group">
+          <div v-if="errorStats.items && errorStats.items.length > 0" class="space-y-4">
+            <div v-for="(item, idx) in errorStats.items.slice(0, 5)" :key="idx" class="flex items-center gap-4 group">
               <div
-                class="w-12 h-12 bg-tertiary-container/20 rounded-xl flex items-center justify-center text-tertiary font-bold"
+                class="w-12 h-12 rounded-xl flex items-center justify-center font-bold shrink-0"
+                :class="idx === 0 ? 'bg-tertiary-container/20 text-tertiary' : idx === 1 ? 'bg-primary-container/20 text-primary' : 'bg-secondary-container/20 text-secondary'"
               >
-                12
+                {{ String(item.count || item.error_count || 0).padStart(2, '0') }}
               </div>
               <div class="flex-grow">
                 <div class="flex justify-between mb-1">
-                  <span class="text-sm font-semibold">几何图形应用</span>
-                  <span class="text-xs text-outline">高频</span>
+                  <span class="text-sm font-semibold">{{ item.content || item.subject || '未知' }}</span>
+                  <span class="text-xs text-outline">{{ item.frequency || (item.count > 5 ? '高频' : item.count > 2 ? '中等' : '低频') }}</span>
                 </div>
                 <div class="h-2 bg-surface-container rounded-full overflow-hidden">
-                  <div class="h-full bg-tertiary w-3/4 rounded-full"></div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center gap-4">
-              <div
-                class="w-12 h-12 bg-primary-container/20 rounded-xl flex items-center justify-center text-primary font-bold"
-              >
-                08
-              </div>
-              <div class="flex-grow">
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm font-semibold">古诗词背诵</span>
-                  <span class="text-xs text-outline">中等</span>
-                </div>
-                <div class="h-2 bg-surface-container rounded-full overflow-hidden">
-                  <div class="h-full bg-primary w-2/5 rounded-full"></div>
-                </div>
-              </div>
-            </div>
-            <div class="flex items-center gap-4">
-              <div
-                class="w-12 h-12 bg-secondary-container/20 rounded-xl flex items-center justify-center text-secondary font-bold"
-              >
-                03
-              </div>
-              <div class="flex-grow">
-                <div class="flex justify-between mb-1">
-                  <span class="text-sm font-semibold">英语过去式</span>
-                  <span class="text-xs text-outline">低频</span>
-                </div>
-                <div class="h-2 bg-surface-container rounded-full overflow-hidden">
-                  <div class="h-full bg-secondary w-1/5 rounded-full"></div>
+                  <div class="h-full rounded-full"
+                    :class="idx === 0 ? 'bg-tertiary' : idx === 1 ? 'bg-primary' : 'bg-secondary'"
+                    :style="{ width: Math.min((item.count || item.error_count || 0) / 20 * 100, 100) + '%' }"
+                  ></div>
                 </div>
               </div>
             </div>
           </div>
+          <div v-else class="flex flex-col items-center justify-center py-12 text-on-surface-variant gap-2">
+            <span class="material-symbols-outlined text-4xl">check_circle</span>
+            <p class="text-sm">暂无错题数据</p>
+          </div>
           <button
             class="w-full mt-6 py-3 border-2 border-dashed border-outline-variant text-outline hover:border-primary hover:text-primary rounded-xl text-sm font-bold transition-colors"
+            @click="$router.push('/studenterrorbook')"
           >
-            生成针对性强化练
+            查看错题本
           </button>
         </section>
 
@@ -276,88 +249,137 @@
               查看全部
             </button>
           </div>
-          <div class="divide-y divide-surface-container-low">
+          <div v-if="recentPractice.length > 0" class="divide-y divide-surface-container-low">
             <div
+              v-for="item in recentPractice"
+              :key="item.id"
               class="py-4 flex justify-between items-center hover:bg-surface-container-low transition-all px-2 rounded-lg cursor-pointer"
             >
               <div class="flex items-center gap-4">
                 <div
-                  class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center"
+                  class="w-10 h-10 rounded-full flex items-center justify-center"
+                  :class="item.class_name ? 'bg-secondary-container' : 'bg-primary-container'"
                 >
-                  <span class="material-symbols-outlined text-secondary text-sm">history_edu</span>
+                  <span class="material-symbols-outlined text-sm" :class="item.class_name ? 'text-secondary' : 'text-primary'">{{ subjectIcon(item.subject || item.class_name) }}</span>
                 </div>
                 <div>
-                  <h4 class="text-sm font-bold">数学周测 - 第二单元</h4>
-                  <p class="text-xs text-outline">提交于 昨天 18:20</p>
+                  <h4 class="text-sm font-bold">{{ item.assignment_title || item.title || '练习' }}</h4>
+                  <p class="text-xs text-outline">提交于 {{ timeAgo(item.submitted_at) }}</p>
                 </div>
               </div>
               <div class="text-right">
-                <div class="text-lg font-headline font-black text-secondary">98</div>
-                <div class="text-[10px] text-outline px-2 bg-secondary/10 rounded">优秀</div>
+                <div v-if="item.score != null" class="text-lg font-headline font-black" :class="item.score >= 80 ? 'text-secondary' : item.score >= 60 ? 'text-primary' : 'text-tertiary'">{{ item.score }}</div>
+                <div v-else class="text-lg font-headline font-black text-on-surface-variant">--</div>
+                <div class="text-[10px] text-outline px-2 rounded" :class="getScoreGrade(item.score).bg">{{ getScoreGrade(item.score).label }}</div>
               </div>
             </div>
-            <div
-              class="py-4 flex justify-between items-center hover:bg-surface-container-low transition-all px-2 rounded-lg cursor-pointer"
-            >
-              <div class="flex items-center gap-4">
-                <div
-                  class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center"
-                >
-                  <span class="material-symbols-outlined text-primary text-sm">translate</span>
-                </div>
-                <div>
-                  <h4 class="text-sm font-bold">英语阅读理解 A</h4>
-                  <p class="text-xs text-outline">提交于 前天 20:05</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <div class="text-lg font-headline font-black text-primary">85</div>
-                <div class="text-[10px] text-outline px-2 bg-primary/10 rounded">良好</div>
-              </div>
-            </div>
-            <div
-              class="py-4 flex justify-between items-center hover:bg-surface-container-low transition-all px-2 rounded-lg cursor-pointer"
-            >
-              <div class="flex items-center gap-4">
-                <div
-                  class="w-10 h-10 rounded-full bg-tertiary-container flex items-center justify-center"
-                >
-                  <span class="material-symbols-outlined text-tertiary text-sm">science</span>
-                </div>
-                <div>
-                  <h4 class="text-sm font-bold">科学实验观察报告</h4>
-                  <p class="text-xs text-outline">提交于 3天前</p>
-                </div>
-              </div>
-              <div class="text-right">
-                <div class="text-lg font-headline font-black text-tertiary">72</div>
-                <div class="text-[10px] text-outline px-2 bg-tertiary/10 rounded">及格</div>
-              </div>
-            </div>
+          </div>
+          <div v-else class="flex flex-col items-center justify-center py-12 text-on-surface-variant gap-2">
+            <span class="material-symbols-outlined text-4xl">history</span>
+            <p class="text-sm">暂无练习记录</p>
           </div>
         </section>
       </div>
 
-      <footer class="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-xl p-8 text-center">
-        <h4 class="font-headline font-bold text-xl mb-2 text-on-primary-container">AI 学情洞察</h4>
-        <p class="text-on-surface-variant max-w-2xl mx-auto mb-6">
-          林悦悦本周在逻辑思维方面表现优异，数学成绩提升显著。建议加强英语词汇的语境记忆，目前记忆曲线处于波动期。✨
-        </p>
-        <div class="flex justify-center gap-4">
-          <button
-            class="bg-white/80 border border-primary-container text-primary px-6 py-2 rounded-full text-sm font-bold hover:bg-white transition-colors"
-          >
-            查看详细 AI 建议
-          </button>
-        </div>
-      </footer>
     </main>
   </div>
 </template>
 
 <script setup>
-import TeacherTopNavbar from '@/components/layout/TeacherTopNavbar.vue'
+import { ref, computed, onMounted } from 'vue'
+import StudentTopNavbar from '@/components/layout/StudentTopNavbar.vue'
 import StudentSidebar from '@/components/layout/StudentSidebar.vue'
+import { getMe } from '@/services/userService.js'
+import { getMyStats, getMyRecentPractice, getErrorBookStats } from '@/services/questionService.js'
+
+const user = ref(null)
+const stats = ref(null)
+const recentPractice = ref([])
+const errorStats = ref({ items: [], totalCount: 0 })
+const loading = ref(true)
+
+const displayName = computed(() => user.value?.name || '—')
+const displayAvatar = computed(() => {
+  const url = user.value?.avatar_url
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return url
+})
+const displayGrade = computed(() => user.value?.grade || '')
+const displayClass = computed(() => user.value?.class_name || '')
+const displayLevel = computed(() => user.value?.level || 0)
+const displayPoints = computed(() => stats.value?.points || user.value?.points || 0)
+const displayAccuracy = computed(() => {
+  const val = stats.value?.accuracy ?? user.value?.accuracy ?? 0
+  return val > 1 ? Math.round(val) : Math.round(val * 100)
+})
+const displayCombatPower = computed(() => stats.value?.combat_power || user.value?.combat_power || 0)
+const displayHomeworkDone = computed(() => stats.value?.homework_done ?? user.value?.homework_done ?? 0)
+
+function levelTitle(level) {
+  if (level >= 18) return '学神'
+  if (level >= 14) return '学霸'
+  if (level >= 10) return '知识先锋'
+  if (level >= 7) return '努力小天才'
+  if (level >= 4) return '进取少年'
+  return '勤奋学员'
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  const pad = n => String(n).padStart(2, '0')
+  return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return ''
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return '刚刚'
+  if (mins < 60) return `${mins} 分钟前`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours} 小时前`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `${days} 天前`
+  return formatDate(dateStr)
+}
+
+function getScoreGrade(score) {
+  if (score == null) return { label: '待批改', color: 'text-on-surface-variant', bg: 'bg-surface-container' }
+  if (score >= 90) return { label: '优秀', color: 'text-secondary', bg: 'bg-secondary/10' }
+  if (score >= 75) return { label: '良好', color: 'text-primary', bg: 'bg-primary/10' }
+  if (score >= 60) return { label: '及格', color: 'text-tertiary', bg: 'bg-tertiary/10' }
+  return { label: '需努力', color: 'text-error', bg: 'bg-error/10' }
+}
+
+function subjectIcon(subject) {
+  const icons = {
+    '数学': 'calculate', '语文': 'history_edu', '英语': 'language',
+    '物理': 'science', '化学': 'science', '生物': 'biotech',
+    '历史': 'history', '政治': 'gavel', '地理': 'public',
+  }
+  return icons[subject] || 'school'
+}
+
+onMounted(async () => {
+  try {
+    const [userData, statsData, practiceData, errorData] = await Promise.all([
+      getMe(),
+      getMyStats().catch(() => null),
+      getMyRecentPractice({ limit: 5 }).catch(() => ({ items: [] })),
+      getErrorBookStats().catch(() => ({ items: [], totalCount: 0 })),
+    ])
+    user.value = userData
+    stats.value = statsData
+    recentPractice.value = practiceData.items || []
+    errorStats.value = errorData
+  } catch (e) {
+    console.error('Failed to load analytics:', e)
+  } finally {
+    loading.value = false
+  }
+})
 </script>
 
 <style scoped>

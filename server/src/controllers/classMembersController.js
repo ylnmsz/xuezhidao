@@ -2,9 +2,25 @@ import { randomUUID } from 'crypto'
 import { query } from '../db.js'
 
 export const listClassMembers = async (req, res) => {
-  const { classId, userId } = req.query
+  const { classId, userId, expand } = req.query
   try {
     if (classId) {
+      // When expand=user, join with users table to get full profile + stats
+      if (expand === 'user') {
+        const result = await query(
+          `SELECT
+             cm.id, cm.class_id, cm.user_id, cm.role AS member_role, cm.joined_at,
+             u.name, u.email, u.avatar_url, u.grade, u.class_name, u.school, u.signature,
+             u.level, u.streak_days, u.weekly_study_hours, u.homework_done,
+             u.accuracy, u.points, u.combat_power, u.role AS user_role
+           FROM class_members cm
+           JOIN users u ON cm.user_id = u.id
+           WHERE cm.class_id = $1 AND u.role = 'student'
+           ORDER BY u.combat_power DESC`,
+          [classId],
+        )
+        return res.json({ items: result.rows })
+      }
       const result = await query(
         'SELECT id, class_id, user_id, role, joined_at FROM class_members WHERE class_id = $1 ORDER BY joined_at DESC',
         [classId],
